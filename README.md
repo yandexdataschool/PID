@@ -1,7 +1,12 @@
 # PID
 
 # Source C++ code
-https://svnweb.cern.ch/trac/lhcb/browser/packages/trunk/Rec/ChargedProtoANNPIDTeacher
+in cpp/
+
+copied from https://svnweb.cern.ch/trac/lhcb/browser/packages/trunk/Rec/ChargedProtoANNPIDTeacher
+
+Compilable standalone (provided that you write a correct Makefile). 
+
 
 #Root files
 The ROOT files I use are defined in the various DataFiles at

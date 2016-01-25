@@ -1,0 +1,9 @@
+all
+Ghosts
+Ghosts
+BTracksOnly
+BTracksOnly
+NaturalMix
+NoReweight
+1000000
+10000000

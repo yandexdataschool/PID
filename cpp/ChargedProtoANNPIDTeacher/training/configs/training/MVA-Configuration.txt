@@ -1,0 +1,8 @@
+
+# Common Neurobayes parameters
+NBTASK = CLA
+NBMOM  = 0.0
+NBREG  = ALL
+
+# Common TMVA parameters
+TMVAVALIDATIONFRAC = 0.3

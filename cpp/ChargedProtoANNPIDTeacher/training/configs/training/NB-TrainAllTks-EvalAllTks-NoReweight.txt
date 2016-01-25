@@ -1,0 +1,9 @@
+all
+Ghosts
+Ghosts
+AllTracksInEvent
+AllTracksInEvent
+NaturalMix
+NoReweight
+1000000
+10000000
