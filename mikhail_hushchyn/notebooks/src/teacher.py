@@ -357,20 +357,20 @@ def teacher(params, location='http'):
 
     for data_file in train_files:
 
-        LOG.write("File " + data_file + " is readed.\n")
-        print "File " + data_file + " is readed.\n"
-
         n_files_used += 1
 
         # Get data file path and tree name
         if location == 'local':
             data_file_path, data_file_tree = data_file.split(':')
         elif location == 'http':
-            data_file_path, data_file_tree = data_file.split(':')
-            data_file_path = data_file_path.replace("/r02/lhcb/jonesc/ANNPID/", "http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/")
+            data_file_path_raw, data_file_tree = data_file.split(':')
+            data_file_path = data_file_path_raw.replace("/r03/lhcb/jonesc/ANNPID/", "http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/")
         else:
             print "File path is incorrect. Check the configs."
             return 0
+
+        LOG.write("File " + data_file_path + " is readed.\n")
+        print "File " + data_file_path + " is readed.\n"
 
         # Open data file and convert it to csv
         branches = root_numpy.list_branches(data_file_path, treename=data_file_tree)
