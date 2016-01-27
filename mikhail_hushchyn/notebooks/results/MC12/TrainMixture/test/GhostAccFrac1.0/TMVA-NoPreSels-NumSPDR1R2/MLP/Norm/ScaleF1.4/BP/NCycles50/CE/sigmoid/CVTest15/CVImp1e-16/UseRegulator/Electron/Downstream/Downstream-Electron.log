@@ -1,0 +1,16 @@
+Hello!
+Initialisation is completed.
+Configuration is completed.
+Start reading files.
+File /Users/mikhail91/Documents/Github/PID/mikhail_hushchyn/notebooks/data/el/ANNPID.11.root:ANNPID/DecayTree is readed.
+File /Users/mikhail91/Documents/Github/PID/mikhail_hushchyn/notebooks/data/el/ANNPID.111.root:ANNPID/DecayTree is readed.
+File /Users/mikhail91/Documents/Github/PID/mikhail_hushchyn/notebooks/data/heavy/ANNPID.11.root:ANNPID/DecayTree is readed.
+File /Users/mikhail91/Documents/Github/PID/mikhail_hushchyn/notebooks/data/heavy/ANNPID.28.root:ANNPID/DecayTree is readed.
+File /Users/mikhail91/Documents/Github/PID/mikhail_hushchyn/notebooks/data/ka/ANNPID.102.root:ANNPID/DecayTree is readed.
+File /Users/mikhail91/Documents/Github/PID/mikhail_hushchyn/notebooks/data/ka/ANNPID.67.root:ANNPID/DecayTree is readed.
+Was selected 20004 tracks.
+Was used 6 files.
+Selected tracks by type: {0: 11140, 321: 361, 2212: 928, 11: 2906, 13: 152, 211: 4517}.
+Reading train data is completed.
+Writing train data is completed.
+Training complete.
