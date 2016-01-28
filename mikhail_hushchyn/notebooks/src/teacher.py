@@ -355,7 +355,7 @@ def teacher(params, location='http'):
 
     n_files_used = 0
 
-    for data_file in train_files:
+    for data_file in [train_files[0]]: # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         n_files_used += 1
 
@@ -372,16 +372,21 @@ def teacher(params, location='http'):
         LOG.write("File " + data_file_path + " is readed.\n")
         print "File " + data_file_path + " is readed.\n"
 
-        # Open data file and convert it to csv
-        branches = root_numpy.list_branches(data_file_path, treename=data_file_tree)
-        branches = numpy.array(branches)
+        try:
+            # Open data file and convert it to csv
+            branches = root_numpy.list_branches(data_file_path, treename=data_file_tree)
+            branches = numpy.array(branches)
 
-        training_tree = root_numpy.root2array(data_file_path,
-                                              treename=data_file_tree,
-                                              branches=branches[branches != 'piplus_OWNPV_COV_'],
-                                              selection = combined_train_sel)
+            training_tree = root_numpy.root2array(data_file_path,
+                                                  treename=data_file_tree,
+                                                  branches=branches[branches != 'piplus_OWNPV_COV_'],
+                                                  selection = combined_train_sel)
 
-        training_tree = pandas.DataFrame(data=training_tree, columns=branches[branches != 'piplus_OWNPV_COV_'])
+            training_tree = pandas.DataFrame(data=training_tree, columns=branches[branches != 'piplus_OWNPV_COV_'])
+        except:
+            LOG.write("Cannot read file: " + data_file_path + "\n")
+            print "Cannot read file: " + data_file_path
+            continue
 
         # MC type
         mc_particle_type = training_tree.MCParticleType.values
@@ -455,11 +460,20 @@ def teacher(params, location='http'):
                 test_tracks += 1
                 test_tracks_file += 1
 
+
             # Found enough tracks ?
             if selected_tracks >= int(n_training_tracks):
                 break
 
-
+        LOG.write("n_training_tracks = " + str(n_training_tracks) + "\n")
+        LOG.write("selected_tracks = " + str(selected_tracks) + "\n")
+        LOG.write("signal_tracks = " + str(signal_tracks) + "\n")
+        LOG.write("background_tracks = " + str(selected_tracks) + "\n")
+        LOG.write("selected_tracks_file = " + str(selected_tracks_file) + "\n")
+        LOG.write("selected_tracks_by_type = " + str(selected_tracks_by_type) + "\n")
+        LOG.write("n_per_type = " + str(n_per_type) + "\n")
+        LOG.write("test_tracks = " + str(test_tracks) + "\n")
+        LOG.write("test_tracks_file = " + str(test_tracks_file) + "\n")
 
         # Found enough tracks ?
         if selected_tracks >= n_training_tracks:
