@@ -355,7 +355,7 @@ def teacher(params, location='http'):
 
     n_files_used = 0
 
-    for data_file in [train_files[0]]: # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    for data_file in train_files: # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         n_files_used += 1
 
