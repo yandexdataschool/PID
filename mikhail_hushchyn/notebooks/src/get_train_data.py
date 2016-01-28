@@ -140,18 +140,11 @@ def get_train_data(params, location='http'):
     # Initialise
     ###################################################
 
-    # Running options
-    do_train = params['DOTRAIN']
-    do_eval = params['DOEVAL']
-
     # Open network config file
     net_config = numpy.loadtxt(params['NETCONFIG'], dtype='S', delimiter='\n', comments='!')
 
     # Open training config file
     train_config = numpy.loadtxt(params['TRAINCONFIG'], dtype='S', delimiter='\n', comments='#')
-
-    # Open MVA specific config file
-    mva_config = numpy.loadtxt(params['MVACONFIG'], dtype='S', delimiter='\n', comments='#')
 
     # Training data files
     train_files = numpy.loadtxt(params['TRAINFILES'], dtype='S', delimiter='\n', comments='#')
