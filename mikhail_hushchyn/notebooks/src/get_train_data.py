@@ -364,6 +364,9 @@ def get_train_data(params, location='http'):
         # Count selected tracks for this file
         selected_tracks_file = 0
 
+        rows_train_signal = []
+        rows_train_bkg = []
+
         # Loop over entry list
         for irow in range(0, len(training_tree)):
 
@@ -405,10 +408,12 @@ def get_train_data(params, location='http'):
             # Set inputs and target output
 
             if target:
-                data_train_signal = pandas.concat([data_train_signal, data_row], ignore_index=True) # data_row[features]
+                rows_train_signal.append(irow)
+                # data_train_signal = pandas.concat([data_train_signal, data_row], ignore_index=True) # data_row[features]
 
             else:
-                data_train_bkg = pandas.concat([data_train_bkg, data_row], ignore_index=True) # data_row[features]
+                rows_train_bkg.append(irow)
+                # data_train_bkg = pandas.concat([data_train_bkg, data_row], ignore_index=True) # data_row[features]
 
 
             # count tracks
@@ -420,6 +425,9 @@ def get_train_data(params, location='http'):
             # Found enough tracks ?
             if selected_tracks >= int(n_training_tracks):
                 break
+
+        data_train_signal = training_tree.irow(rows_train_signal)
+        data_train_bkg = training_tree.irow(rows_train_bkg)
 
         VIEWED.append(data_file_path)
         numpy.array(VIEWED).tofile(VIEWEDFILES, sep="\n")
