@@ -206,10 +206,10 @@ def get_train_data(params, location='http'):
     track_type_sel = track_selections[track_type]
 
     # Tracks preselection
-    track_sel = numpy.loadtxt(track_sel_file, dtype='S', delimiter='\n', comments='#')
+    track_sel = numpy.loadtxt(track_sel_file, dtype='S', delimiter='\n', comments='#', ndmin=1)
 
     # MC tracks training selection
-    mc_track_sel_training = numpy.loadtxt(mc_track_sel_training_file, dtype='S', delimiter='\n', comments='#')
+    mc_track_sel_training = numpy.loadtxt(mc_track_sel_training_file, dtype='S', delimiter='\n', comments='#', ndmin=1)
 
     # Reweighting selection
     if reweight_opt == "ReweightRICH2" :
