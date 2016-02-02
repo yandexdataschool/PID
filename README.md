@@ -1,4 +1,6 @@
-# PID
+# Particle IDentification
+
+![pid](pic/pid.jpg)
 
 # Source C++ code
 in cpp/
