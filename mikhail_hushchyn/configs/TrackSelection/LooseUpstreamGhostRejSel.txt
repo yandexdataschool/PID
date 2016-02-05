@@ -1,0 +1,6 @@
+
+# Ghost Prob cut for Upstream tracks
+TrackGhostProbability < 0.7
+
+# Reject all clones
+TrackCloneDist < -1

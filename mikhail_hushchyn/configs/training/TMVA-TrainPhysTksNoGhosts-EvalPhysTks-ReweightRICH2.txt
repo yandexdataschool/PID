@@ -1,0 +1,9 @@
+all
+NoGhosts
+Ghosts
+AllPhysTracksInEvent.txt
+AllPhysTracksInEvent.txt
+NaturalMix
+ReweightRICH2
+1200000
+10000000
