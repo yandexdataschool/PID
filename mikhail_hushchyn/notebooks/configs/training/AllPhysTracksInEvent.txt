@@ -1,1 +1,0 @@
-!HasMC || MCVertexType==1 || MCVertexType==2

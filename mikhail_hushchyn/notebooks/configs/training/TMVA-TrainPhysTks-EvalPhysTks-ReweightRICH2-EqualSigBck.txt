@@ -1,9 +1,0 @@
-all
-Ghosts
-Ghosts
-AllPhysTracksInEvent.txt
-AllPhysTracksInEvent.txt
-EqualSigBck
-ReweightRICH2
-1200000
-10000000

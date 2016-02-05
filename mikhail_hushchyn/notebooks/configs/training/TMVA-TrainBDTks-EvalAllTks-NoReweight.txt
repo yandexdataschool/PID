@@ -1,9 +1,0 @@
-all
-Ghosts
-Ghosts
-BorDTracksOnly.txt
-AllTracksInEvent.txt
-NaturalMix
-NoReweight
-1000000
-10000000

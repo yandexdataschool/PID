@@ -1,6 +1,0 @@
-
-# Ghost Prob cut for Long tracks
-TrackGhostProbability < 0.5
-
-# Reject all clones
-TrackCloneDist < -1

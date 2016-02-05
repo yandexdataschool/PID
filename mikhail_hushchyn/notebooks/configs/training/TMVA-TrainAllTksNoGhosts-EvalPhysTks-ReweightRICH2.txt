@@ -1,9 +1,0 @@
-all
-NoGhosts
-Ghosts
-AllTracksInEvent.txt
-AllPhysTracksInEvent.txt
-NaturalMix
-ReweightRICH2
-1200000
-10000000

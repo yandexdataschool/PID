@@ -1,9 +1,0 @@
-all
-Ghosts
-Ghosts
-BorDTracksOnly
-BorDTracksOnly
-NaturalMix
-NoReweight
-1000000
-10000000

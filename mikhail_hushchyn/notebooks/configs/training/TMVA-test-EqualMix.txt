@@ -1,9 +1,0 @@
-all
-Ghosts
-Ghosts
-AllTracksInEvent.txt
-AllTracksInEvent.txt
-EqualMix
-NoReweight
-10000
-100000

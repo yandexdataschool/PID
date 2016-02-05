@@ -1,6 +1,0 @@
-
-# IP chi^2 cut (LOng and Upstream only)
-piplus_IPCHI2_OWNPV < 4 || abs(TrackType-5) < 0.1 
-
-# veto very low Pt tracks
-TrackPt > 250

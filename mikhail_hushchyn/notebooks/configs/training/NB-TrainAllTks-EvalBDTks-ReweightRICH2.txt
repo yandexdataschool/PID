@@ -1,9 +1,0 @@
-all
-Ghosts
-Ghosts
-AllTracksInEvent
-BorDTracksOnly
-NaturalMix
-ReweightRICH2
-1000000
-10000000
