@@ -22,3 +22,6 @@ training/MC12-TrainingFiles-Kaons-Cambridge.txt
 These files are all at Cambridge only I am afraid, so you will need to make some copies. I have placed a link to them at
 
 http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/ProtoParticlePIDtuples/
+
+###Feature description
+https://docs.google.com/document/d/1Bn24ZELWZeGuuxyWSKyuGqBRNHFI82_isCLhhv2llvg/edit#heading=h.590zzpg0470g
