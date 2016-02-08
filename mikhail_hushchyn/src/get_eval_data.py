@@ -334,7 +334,7 @@ def get_eval_data(params, location='http'):
         elif location == 'http':
             data_file_path_raw, data_file_tree = data_file.split(':')
             data_file_path = data_file_path_raw.replace("/r02/lhcb/jonesc/ANNPID/", "http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/")
-            data_file_path = data_file_path_raw.replace("/r03/lhcb/jonesc/ANNPID/", "http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/")
+            data_file_path = data_file_path.replace("/r03/lhcb/jonesc/ANNPID/", "http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/")
         else:
             print "File path is incorrect. Check the configs."
             return 0
