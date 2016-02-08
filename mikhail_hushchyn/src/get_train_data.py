@@ -441,8 +441,15 @@ def get_train_data(params, location='http'):
         LOG.write("Link to file was writen in viewed_files.txt\n")
         LOG.flush()
 
-        data_train_signal.to_csv(WORKPATH + '/data_train_signal.csv', mode='a')
-        data_train_bkg.to_csv(WORKPATH + '/data_train_bkg.csv', mode='a')
+        if os.path.exists(WORKPATH + '/data_train_signal.csv'):
+            data_train_signal.to_csv(WORKPATH + '/data_train_signal.csv', mode='a', header=False)
+        else:
+            data_train_signal.to_csv(WORKPATH + '/data_train_signal.csv', mode='a', header=True)
+
+        if os.path.exists(WORKPATH + '/data_train_bkg.csv'):
+            data_train_bkg.to_csv(WORKPATH + '/data_train_bkg.csv', mode='a', header=False)
+        else:
+            data_train_bkg.to_csv(WORKPATH + '/data_train_bkg.csv', mode='a', header=True)
 
         LOG.write("n_training_tracks = " + str(n_training_tracks) + "\n")
         LOG.write("selected_tracks = " + str(selected_tracks) + "\n")

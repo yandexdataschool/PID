@@ -402,7 +402,10 @@ def get_eval_data(params, location='http'):
         LOG.write("Link to file was writen in viewed_files.txt\n")
         LOG.flush()
 
-        data_eval.to_csv(WORKPATH + '/data_eval.csv', mode='a')
+        if os.path.exists(WORKPATH + '/data_eval.csv'):
+            data_eval.to_csv(WORKPATH + '/data_eval.csv', mode='a', header=False)
+        else:
+            data_eval.to_csv(WORKPATH + '/data_eval.csv', mode='a', header=True)
 
         LOG.write("n_training_tracks = " + str(n_training_tracks) + "\n")
         LOG.write("selected_tracks = " + str(selected_tracks) + "\n")
