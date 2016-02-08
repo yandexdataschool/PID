@@ -445,9 +445,9 @@ def MVAEffForDLLCut(params, eval_data, eval_proba, eval_labels, features, path="
 
     for dll_cut in dll_cuts:
 
-        cut_data = eval_data[eval_data[comb_dll] > dll_cut]
+        cut_data = eval_data[eval_data[comb_dll].values > dll_cut]
         cut_p_types = cut_data.MCParticleType.values
-        cut_mva_out = eval_proba[eval_data[comb_dll] > dll_cut][:, 1]
+        cut_mva_out = eval_proba[eval_data[comb_dll].values > dll_cut][:, 1]
 
         plt.figure(figsize=(10,7))
 
@@ -567,9 +567,9 @@ def DLLEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path="pi
 
     for dll_cut in dll_cuts:
 
-        cut_p_types = eval_data[eval_data.TrackP <= 100000].MCParticleType.values
-        cut_track_p = eval_data[eval_data.TrackP <= 100000]['TrackP'].values
-        cut_combo_dll = eval_data[eval_data.TrackP <= 100000][comb_dll].values
+        cut_p_types = eval_data[eval_data.TrackP.values <= 100000].MCParticleType.values
+        cut_track_p = eval_data[eval_data.TrackP.values <= 100000]['TrackP'].values
+        cut_combo_dll = eval_data[eval_data.TrackP.values <= 100000][comb_dll].values
 
         plt.figure(figsize=(10,7))
 
@@ -627,9 +627,9 @@ def DLLEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path="p
 
     for dll_cut in dll_cuts:
 
-        cut_p_types = numpy.abs(eval_data[eval_data.TrackPt <= 10000].MCParticleType.values)
-        cut_track_pt = eval_data[eval_data.TrackPt <= 10000]['TrackPt'].values
-        cut_combo_dll = eval_data[eval_data.TrackPt <= 10000][comb_dll].values
+        cut_p_types = numpy.abs(eval_data[eval_data.TrackPt.values <= 10000].MCParticleType.values)
+        cut_track_pt = eval_data[eval_data.TrackPt.values <= 10000]['TrackPt'].values
+        cut_combo_dll = eval_data[eval_data.TrackPt.values <= 10000][comb_dll].values
 
         plt.figure(figsize=(10,7))
 
@@ -686,9 +686,9 @@ def MVAEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path="pi
 
     for mva_cut in mva_out_cuts:
 
-        cut_p_types = eval_data[eval_data.TrackP <= 100000].MCParticleType.values
-        cut_track_p = eval_data[eval_data.TrackP <= 100000]['TrackP'].values
-        cut_mva = eval_proba[eval_data.TrackP <= 100000, 1]
+        cut_p_types = eval_data[eval_data.TrackP.values <= 100000].MCParticleType.values
+        cut_track_p = eval_data[eval_data.TrackP.values <= 100000]['TrackP'].values
+        cut_mva = eval_proba[eval_data.TrackP.values <= 100000, 1]
 
         plt.figure(figsize=(10,7))
 
@@ -746,9 +746,9 @@ def MVAEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path="p
 
     for mva_cut in mva_out_cuts:
 
-        cut_p_types = numpy.abs(eval_data[eval_data.TrackPt <= 10000].MCParticleType.values)
-        cut_track_pt = eval_data[eval_data.TrackPt <= 10000]['TrackPt'].values
-        cut_mva = eval_proba[eval_data.TrackPt <= 10000, 1]
+        cut_p_types = numpy.abs(eval_data[eval_data.TrackPt.values <= 10000].MCParticleType.values)
+        cut_track_pt = eval_data[eval_data.TrackPt.values <= 10000]['TrackPt'].values
+        cut_mva = eval_proba[eval_data.TrackPt.values <= 10000, 1]
 
         plt.figure(figsize=(10,7))
 
