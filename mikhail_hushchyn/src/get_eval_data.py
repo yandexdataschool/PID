@@ -407,7 +407,7 @@ def get_eval_data(params, location='http'):
         else:
             data_eval.to_csv(WORKPATH + '/data_eval.csv', mode='a', header=True)
 
-        LOG.write("n_training_tracks = " + str(n_training_tracks) + "\n")
+        LOG.write("n_eval_tracks = " + str(n_eval_tracks) + "\n")
         LOG.write("selected_tracks = " + str(selected_tracks) + "\n")
         LOG.write("selected_tracks_file = " + str(selected_tracks_file) + "\n")
         LOG.flush()
