@@ -225,7 +225,7 @@ def get_eval_data(params, location='http'):
     track_sel = numpy.loadtxt(track_sel_file, dtype='S', delimiter='\n', comments='#', ndmin=1)
 
     # MC tracks eval selectiom
-    mc_track_sel_eval = numpy.loadtxt(mc_track_sel_eval_file, dtype='S', delimiter='\n', comments='#')
+    mc_track_sel_eval = numpy.loadtxt(mc_track_sel_eval_file, dtype='S', delimiter='\n', comments='#', ndmin=1)
 
     # Reweighting selection
     if reweight_opt == "ReweightRICH2" :
