@@ -392,11 +392,9 @@ def get_train_data(params, location='http'):
             target = mc_particle_type == particle_pdg
 
             # Equal mix ?
-            if not selected_tracks_by_type.has_key(mc_particle_type):
-                continue
-
-            if (equal_by_type and selected_tracks_by_type[mc_particle_type] >= n_per_type) :
-                continue
+            if selected_tracks_by_type.has_key(mc_particle_type):
+                if (equal_by_type and selected_tracks_by_type[mc_particle_type] >= n_per_type) :
+                    continue
 
             # Background type selection for training
             if not ( target or all_pid_type == bkg_pdg or mc_particle_type == int(bkg_pdg) ):
@@ -425,8 +423,9 @@ def get_train_data(params, location='http'):
 
             # count tracks
             selected_tracks += 1
-            selected_tracks_file += 1;
-            selected_tracks_by_type[mc_particle_type] += 1
+            selected_tracks_file += 1
+            if selected_tracks_by_type.has_key(mc_particle_type):
+                selected_tracks_by_type[mc_particle_type] += 1
 
 
             # Found enough tracks ?
