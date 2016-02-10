@@ -355,7 +355,7 @@ def get_eval_data(params, location='http'):
             eval_tree = root_numpy.root2array(data_file_path,
                                                   treename=data_file_tree,
                                                   branches=branches[branches != 'piplus_OWNPV_COV_'],
-                                                  selection = combined_eval_sel)
+                                                  selection = combined_eval_sel)[::10] # !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             eval_tree = pandas.DataFrame(data=eval_tree, columns=branches[branches != 'piplus_OWNPV_COV_'])
         except:
