@@ -237,7 +237,7 @@ def get_eval_data(params, location='http'):
     n_training_tracks = train_config[7]
 
     # Number of eval tracks
-    n_eval_tracks = train_config[8]
+    n_eval_tracks = int(train_config[8])//10 # !!!!!!!!!!!!!!!!!
 
     # NUmber of features
     n_var = len(features)
