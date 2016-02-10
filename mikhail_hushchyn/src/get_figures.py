@@ -48,7 +48,7 @@ def get_bins(x, y, bins, x_min, x_max):
         y_bin = y[(x >= left) * (x < right)]
 
         y_means.append(y_bin.mean())
-        y_err.append(1. * y_bin.std() / len(y_bin))
+        y_err.append(1. * y_bin.std() / (len(y_bin) + 0.001))
         x_means.append(0.5*(left + right))
         x_err.append(0.5*(-left + right))
 
@@ -74,8 +74,8 @@ def get_hist(var, bins, min_var, max_var):
         var_errs.append(0.5 * (right - left))
 
         n = 1. * len(var[(var >= left) * (var < right)])
-        n_bins.append(n / (len(var)))
-        n_errs.append(numpy.sqrt(n)/ (len(var)))
+        n_bins.append(n / (len(var) + 0.001))
+        n_errs.append(numpy.sqrt(n)/ (len(var) + 0.001))
 
     var_bins = numpy.array(var_bins)
     n_bins = numpy.array(n_bins)
@@ -90,7 +90,7 @@ def poisson_error(sel, total):
     n = 1. - p
     N = total
 
-    err = numpy.sqrt(numpy.abs(p * n / N))
+    err = numpy.sqrt(numpy.abs(p * n / (N)))
 
     return 100 * err
 
@@ -105,10 +105,10 @@ def get_eff(mva, bins, min_mva, max_mva):
 
     for edge in edges:
 
-        one_eff = 100. * len(mva[mva >= edge]) / (len(mva) + 1)
+        one_eff = 100. * len(mva[mva >= edge]) / (len(mva) + 0.001)
         effs.append(one_eff)
 
-        one_eff_err = poisson_error(len(mva[mva >= edge]), len(mva) + 1)
+        one_eff_err = poisson_error(len(mva[mva >= edge]), len(mva) + 0.001)
         eff_errs.append(one_eff_err)
 
         mva_errs.append(0.5 * step)
@@ -132,10 +132,10 @@ def get_eff_v_var(mva, mva_cut, var, bins, min_var, max_var):
 
         bin_mva = mva[(var >= left) * (var < right)]
 
-        one_eff = 100. * len(bin_mva[bin_mva >= mva_cut]) / (len(bin_mva) + 1)
+        one_eff = 100. * len(bin_mva[bin_mva >= mva_cut]) / (len(bin_mva) + 0.001)
         effs.append(one_eff)
 
-        one_eff_err = poisson_error(len(bin_mva[bin_mva >= mva_cut]), len(bin_mva) + 1)
+        one_eff_err = poisson_error(len(bin_mva[bin_mva >= mva_cut]), len(bin_mva) + 0.001)
         eff_errs.append(one_eff_err)
 
         vars_bins.append(0.5 * (right + left))
@@ -156,16 +156,16 @@ def get_por_eff(mva, labels, bins, min_mva, max_mva):
 
     for edge in edges:
 
-        one_eff = 100. * len(mva[mva >= edge]) / (len(mva) + 1)
+        one_eff = 100. * len(mva[mva >= edge]) / (len(mva) + 0.001)
         effs.append(one_eff)
 
-        one_eff_err = poisson_error(len(mva[mva >= edge]), len(mva) + 1)
+        one_eff_err = poisson_error(len(mva[mva >= edge]), len(mva) + 0.001)
         eff_errs.append(100.*one_eff_err)
 
-        one_pur = 100. * len(labels[(labels==1) * (mva >= edge)]) / (len(labels[mva >= edge]) + 1)
+        one_pur = 100. * len(labels[(labels==1) * (mva >= edge)]) / (len(labels[mva >= edge]) + 0.001)
         purs.append(one_pur)
 
-        one_pur_err = poisson_error(len(labels[(labels==1) * (mva >= edge)]), len(labels[mva >= edge]) + 1)
+        one_pur_err = poisson_error(len(labels[(labels==1) * (mva >= edge)]), len(labels[mva >= edge]) + 0.001)
         pur_errs.append(100.*one_eff_err)
 
         mva_errs.append(0.5 * step)
@@ -185,16 +185,16 @@ def get_miss_and_eff(mva_p_one, mva_p_two, bins, min_mva, max_mva):
 
     for edge in edges:
 
-        one_eff_p_one = 100. * len(mva_p_one[mva_p_one >= edge]) / (len(mva_p_one) + 1)
+        one_eff_p_one = 100. * len(mva_p_one[mva_p_one >= edge]) / (len(mva_p_one) + 0.001)
         effs_p_one.append(one_eff_p_one)
 
-        one_eff_err_p_one = poisson_error(len(mva_p_one[mva_p_one >= edge]), len(mva_p_one) + 1)
+        one_eff_err_p_one = poisson_error(len(mva_p_one[mva_p_one >= edge]), len(mva_p_one) + 0.001)
         eff_errs_p_one.append(one_eff_err_p_one)
 
-        one_eff_p_two = 100. * len(mva_p_two[mva_p_two >= edge]) / (len(mva_p_two) + 1)
+        one_eff_p_two = 100. * len(mva_p_two[mva_p_two >= edge]) / (len(mva_p_two) + 0.001)
         effs_p_two.append(one_eff_p_two)
 
-        one_eff_err_p_two = poisson_error(len(mva_p_two[mva_p_two >= edge]), len(mva_p_two) + 1)
+        one_eff_err_p_two = poisson_error(len(mva_p_two[mva_p_two >= edge]), len(mva_p_two) + 0.001)
         eff_errs_p_two.append(one_eff_err_p_two)
 
     return effs_p_one, effs_p_two, eff_errs_p_one, eff_errs_p_two
@@ -212,12 +212,12 @@ def get_pur(mva, labels, bins, min_mva, max_mva):
 
     for edge in edges:
 
-        one_pur = 100. * len(labels[(labels==1) * (mva >= edge)]) / (len(labels[mva >= edge]) + 1)
+        one_pur = 100. * len(labels[(labels==1) * (mva >= edge)]) / (len(labels[mva >= edge]) + 0.001)
         if len(labels[mva >= edge]) == 0:
             one_pur = 100
         purs.append(one_pur)
 
-        one_pur_err = poisson_error(len(labels[(labels==1) * (mva >= edge)]), len(labels[mva >= edge]) + 1)
+        one_pur_err = poisson_error(len(labels[(labels==1) * (mva >= edge)]), len(labels[mva >= edge]) + 0.001)
         pur_errs.append(one_pur_err)
 
         mva_errs.append(0.5 * step)
@@ -278,13 +278,16 @@ def Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path
 
             if (n_in_bins+n_errs).max() > ymax:
                 ymax=(n_in_bins+n_errs).max()
-            if n_in_bins[n_in_bins > 0].min() < ymin:
-                ymin = n_in_bins[n_in_bins > 0].min()
+            if len(n_in_bins[n_in_bins > 0]):
+                if n_in_bins[n_in_bins > 0].min() < ymin:
+                    ymin = n_in_bins[n_in_bins > 0].min()
 
             plt.ylim(ymin=0, ymax=ymax)
             plt.legend(loc='best')
 
             if log:
+                if ymin >= ymax:
+                    ymax = ymin
                 plt.ylim(ymin, ymax)
                 plt.yscale('log', nonposy='clip')
 
@@ -822,8 +825,9 @@ def CombDLL(params, eval_data, eval_proba, eval_labels, features, log=False, pat
 
         if (n_in_bins+n_errs).max() > ymax:
             ymax=(n_in_bins+n_errs).max()
-        if n_in_bins[n_in_bins > 0].min() < ymin:
-            ymin = n_in_bins[n_in_bins > 0].min()
+        if len(n_in_bins[n_in_bins > 0]) >0:
+            if n_in_bins[n_in_bins > 0].min() < ymin:
+                ymin = n_in_bins[n_in_bins > 0].min()
 
         plt.ylabel("")
         plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " " + comb_dll, size=15)
@@ -832,6 +836,8 @@ def CombDLL(params, eval_data, eval_proba, eval_labels, features, log=False, pat
         plt.ylim(0, ymax)
 
         if log:
+            if ymax <= ymin:
+                ymax = ymin
             plt.ylim(ymin, ymax)
             plt.yscale('log', nonposy='clip')
 
@@ -887,14 +893,17 @@ def MVAOut(params, eval_data, eval_proba, eval_labels, features, log=False, path
 
         if (n_in_bins+n_errs).max() > ymax:
             ymax=(n_in_bins+n_errs).max()
-        if n_in_bins[n_in_bins > 0].min() < ymin:
-            ymin = n_in_bins[n_in_bins > 0].min()
+        if len(n_in_bins[n_in_bins > 0]) >0:
+            if n_in_bins[n_in_bins > 0].min() < ymin:
+                ymin = n_in_bins[n_in_bins > 0].min()
 
         plt.xlim(0, 1)
         plt.xticks(numpy.arange(0, 1.01, .10))
         plt.ylim(0, ymax)
 
         if log:
+            if ymax <= ymin:
+                ymax = ymin
             plt.ylim(ymin, ymax)
             plt.yscale('log', nonposy='clip')
 
@@ -982,6 +991,9 @@ def EffMissIDEff(params, eval_data, eval_proba, eval_labels, features, path="pic
         pdg_code_one = particle_pdg_codes[particle]
         pdg_mva_one = eval_proba[p_types == pdg_code_one, 1]
         pdg_dll_one = (eval_data[comb_dll])[p_types == pdg_code_one].values
+
+        if len(pdg_dll_one) == 0:
+            continue
 
         pdg_code_two = particle_pdg_codes[params['PARTICLE']]
         pdg_mva_two = eval_proba[p_types == pdg_code_two, 1]
