@@ -30,7 +30,7 @@ def train(particle, track, n_cycles=10):
     data_path = "/notebooks/data/MC2015Sim09Dev03/TrainMixture/TrainPhysTks-EvalPhysTks-NoReweight/GhostAccFrac1.0/TMVA-Run2-NoTkLikCD/" + \
                 track
 
-    work_path = "/baseline/MC2015Sim09Dev03/TrainMixture/TrainPhysTks-EvalPhysTks-NoReweight/GhostAccFrac1.0/" + \
+    work_path = "/notebooks/mikhail91/PID/mikhail_hushchyn/baseline/MC2015Sim09Dev03/TrainMixture/TrainPhysTks-EvalPhysTks-NoReweight/GhostAccFrac1.0/" + \
                 particle + "/" + track + "/TMVA/kMLP"
 
     netconfig_path = "/notebooks/data/configs/networks/TMVA-Run2-NoTkLikCDVelodEdx/" + "GlobalPID_" + \
