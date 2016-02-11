@@ -1236,38 +1236,38 @@ def all_figures(params, eval_data, eval_proba, eval_labels, features, path="pic"
     Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path=path)
     Inputs(params, eval_data, eval_proba, eval_labels, features, log=True, path=path)
 
-    MVAVInputs(params, eval_data, eval_proba, eval_labels, features, path="pic")
-    DLLVInputs(params, eval_data, eval_proba, eval_labels, features, path="pic")
+    MVAVInputs(params, eval_data, eval_proba, eval_labels, features, path=path)
+    DLLVInputs(params, eval_data, eval_proba, eval_labels, features, path=path)
 
-    MVAEffForDLLCut(params, eval_data, eval_proba, eval_labels, features, path="pic")
-    DLLEffForMVACut(params, eval_data, eval_proba, eval_labels, features, path="pic")
+    MVAEffForDLLCut(params, eval_data, eval_proba, eval_labels, features, path=path)
+    DLLEffForMVACut(params, eval_data, eval_proba, eval_labels, features, path=path)
 
-    DLLEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path="pic")
-    DLLEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path="pic")
+    DLLEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path=path)
+    DLLEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path=path)
 
-    MVAEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path="pic")
-    MVAEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path="pic")
+    MVAEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path=path)
+    MVAEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path=path)
 
-    CombDLL(params, eval_data, eval_proba, eval_labels, features, log=False, path="pic")
-    CombDLL(params, eval_data, eval_proba, eval_labels, features, log=True, path="pic")
+    CombDLL(params, eval_data, eval_proba, eval_labels, features, log=False, path=path)
+    CombDLL(params, eval_data, eval_proba, eval_labels, features, log=True, path=path)
 
-    MVAOut(params, eval_data, eval_proba, eval_labels, features, log=False, path="pic")
-    MVAOut(params, eval_data, eval_proba, eval_labels, features, log=True, path="pic")
+    MVAOut(params, eval_data, eval_proba, eval_labels, features, log=False, path=path)
+    MVAOut(params, eval_data, eval_proba, eval_labels, features, log=True, path=path)
 
-    EffPurity(params, eval_data, eval_proba, eval_labels, features, log=False, path="pic")
+    EffPurity(params, eval_data, eval_proba, eval_labels, features, log=False, path=path)
 
-    EffMissIDEff(params, eval_data, eval_proba, eval_labels, features, path="pic")
+    EffMissIDEff(params, eval_data, eval_proba, eval_labels, features, path=path)
 
-    EffOverallMissIDEff(params, eval_data, eval_proba, eval_labels, features, log=False, path="pic")
-    EffOverallMissIDEff(params, eval_data, eval_proba, eval_labels, features, log=True, path="pic")
+    EffOverallMissIDEff(params, eval_data, eval_proba, eval_labels, features, log=False, path=path)
+    EffOverallMissIDEff(params, eval_data, eval_proba, eval_labels, features, log=True, path=path)
 
-    MVADLL(params, eval_data, eval_proba, eval_labels, features, log=False, signal=1, path="pic")
-    MVADLL(params, eval_data, eval_proba, eval_labels, features, log=False, signal=0, path="pic")
-    MVADLL(params, eval_data, eval_proba, eval_labels, features, log=True, signal=1, path="pic")
-    MVADLL(params, eval_data, eval_proba, eval_labels, features, log=True, signal=0, path="pic")
+    MVADLL(params, eval_data, eval_proba, eval_labels, features, log=False, signal=1, path=path)
+    MVADLL(params, eval_data, eval_proba, eval_labels, features, log=False, signal=0, path=path)
+    MVADLL(params, eval_data, eval_proba, eval_labels, features, log=True, signal=1, path=path)
+    MVADLL(params, eval_data, eval_proba, eval_labels, features, log=True, signal=0, path=path)
 
-    PurityVMVAOut(params, eval_data, eval_proba, eval_labels, features, path="pic")
-    PurityVCombDLL(params, eval_data, eval_proba, eval_labels, features, path="pic")
+    PurityVMVAOut(params, eval_data, eval_proba, eval_labels, features, path=path)
+    PurityVCombDLL(params, eval_data, eval_proba, eval_labels, features, path=path)
 
     return 1
 
