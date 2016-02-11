@@ -27,14 +27,14 @@ particle_pdg_codes = {"all": 999999,
 def train(particle, track, n_cycles=10):
 
     # Pathes
-    data_path = "/notebooks/data/MC2015Sim09Dev03/TrainMixture/TrainPhysTks-EvalPhysTks-NoReweight/\
-    GhostAccFrac1.0/TMVA-Run2-NoTkLikCD/" + track
+    data_path = "/notebooks/data/MC2015Sim09Dev03/TrainMixture/TrainPhysTks-EvalPhysTks-NoReweight/GhostAccFrac1.0/TMVA-Run2-NoTkLikCD/" + \
+                track
 
     work_path = "/baseline/MC2015Sim09Dev03/TrainMixture/TrainPhysTks-EvalPhysTks-NoReweight/GhostAccFrac1.0/" + \
-    particle + "/" + track + "/TMVA/kMLP"
+                particle + "/" + track + "/TMVA/kMLP"
 
-    netconfig_path = "/notebooks/data/configs/networks/TMVA-Run2-NoTkLikCDVelodEdx/" + "GlobalPID_" \
-    + particle + "_" + track + "_ANN.txt"
+    netconfig_path = "/notebooks/data/configs/networks/TMVA-Run2-NoTkLikCDVelodEdx/" + "GlobalPID_" + \
+                     particle + "_" + track + "_ANN.txt"
 
     # Read data
     pdg = particle_pdg_codes[particle]
