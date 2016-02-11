@@ -63,6 +63,8 @@ def train(particle, track, n_cycles=10):
         else:
             spectator_features.append(var[1:])
 
+    print 'Reading data is completed'
+
 
     # Train TMVA MLP
 
@@ -85,6 +87,8 @@ def train(particle, track, n_cycles=10):
 
     tmva_mlp.fit(data_train, labels_train)
 
+    print 'Training is completed'
+
     # Save classifier
     if not os.path.exists(work_path):
         os.makedirs(work_path)
@@ -92,6 +96,8 @@ def train(particle, track, n_cycles=10):
     clf_pickle = open(work_path + '/classifier.pkl', 'wb')
     pickle.dump(tmva_mlp, clf_pickle)
     clf_pickle.close()
+
+    print 'Saving the classifier is completed'
 
     prob_mlp = tmva_mlp.predict_proba(data_test)
 
@@ -106,6 +112,8 @@ def train(particle, track, n_cycles=10):
     plt.savefig(work_path + "/roc_auc.pdf")
     plt.close()
 
+    print 'Saving ROC AUC is completed'
+
     # Read eval data
 
     filename = data_path + "/data_eval.csv"
@@ -118,6 +126,8 @@ def train(particle, track, n_cycles=10):
 
     labels_eval = (numpy.abs(data_eval.MCParticleType.values) == pdg) * 1.
 
+    print 'Eval data reading is completed'
+
     # Evaluation
     params = {}
     params['PARTICLE'] = particle
@@ -125,7 +135,10 @@ def train(particle, track, n_cycles=10):
 
     proba_eval = tmva_mlp.predict_proba(data_eval)
 
+
     all_figures(params, data_eval, proba_eval, labels_eval, features, path= work_path + "/pic")
+
+    print 'The figures plotting is completed'
 
     return 1
 
