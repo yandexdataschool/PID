@@ -8,7 +8,7 @@ import matplotlib as mpl
 dll_min = {'Electron': -15., 'Muon': -15., 'Pion': -100., 'Kaon': -50., 'Proton': -50, 'Ghost': 0.}
 dll_max = {'Electron': 15., 'Muon': 15., 'Pion': 100., 'Kaon': 50., 'Proton': 50, 'Ghost': 1.}
 comb_dlls = {'Electron': "CombDLLe", 'Muon': "CombDLLmu", 'Pion': "CombDLLpi",
-             'Kaon': "CombDLLek", 'Proton': "CombDLLp", 'Ghost': "TrackGhostProbability"}
+             'Kaon': "CombDLLk", 'Proton': "CombDLLp", 'Ghost': "TrackGhostProbability"}
 particle_pdg_codes = {"Ghost": 0, "Electron": 11, "Muon": 13, "Pion": 211, "Kaon": 321, "Proton": 2212}
 
 
