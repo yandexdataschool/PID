@@ -249,11 +249,11 @@ def Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path
 
     for var in features:
 
-        var_data = eval_data[[var]].values
-        var_data = var_data[var_data != -999]
+        var_data2 = eval_data[[var]].values
+        var_data = var_data2[var_data2 != -999]
 
         p_types = numpy.abs(eval_data[u'MCParticleType'].values)
-        p_types = p_types[var_data != -999]
+        p_types = p_types[var_data2 != -999]
 
         plt.figure(figsize=(10,7))
 
@@ -320,17 +320,17 @@ def MVAVInputs(params, eval_data, eval_proba, eval_labels, features, path="pic")
 
         plt.figure(figsize=(10,7))
 
-        var_data = eval_data[var].values
-        var_data = var_data[var_data != -999]
+        var_data2 = eval_data[var].values
+        var_data = var_data2[var_data2 != -999]
         p_types = numpy.abs(eval_data[u'MCParticleType'].values)
-        p_types = p_types[var_data != -999]
+        p_types = p_types[var_data2 != -999]
 
         for particle, color in zip(particles, colors):
 
             pdg_code = particle_pdg_codes[particle]
 
             pdg_data = var_data[p_types == pdg_code]
-            pdg_proba = (eval_proba[var_data != -999])[p_types == pdg_code][:, 1]
+            pdg_proba = (eval_proba[var_data2 != -999])[p_types == pdg_code][:, 1]
 
 
             x_min = var_data.min()
@@ -379,12 +379,12 @@ def DLLVInputs(params, eval_data, eval_proba, eval_labels, features, path="pic")
 
     for var in features:
 
-        var_data = eval_data[var].values
-        var_data = var_data[var_data != -999]
+        var_data2 = eval_data[var].values
+        var_data = var_data2[var_data2 != -999]
         p_types = numpy.abs(eval_data[u'MCParticleType'].values)
-        p_types = p_types[var_data != -999]
+        p_types = p_types[var_data2 != -999]
         dll = eval_data[comb_dlls[params['PARTICLE']]].values
-        dll = dll[var_data != -999]
+        dll = dll[var_data2 != -999]
 
         plt.figure(figsize=(10,7))
 
@@ -1110,10 +1110,10 @@ def MVADLL(params, eval_data, eval_proba, eval_labels, features, log=False, sign
 
     plt.figure(figsize=(10,7))
 
-    dll_data = eval_data[comb_dll][eval_labels==signal].values
-    dll_data = dll_data[(dll_data >= dll_min[params['PARTICLE']]) * (dll_data < dll_max[params['PARTICLE']])]
+    dll_data2 = eval_data[comb_dll][eval_labels==signal].values
+    dll_data = dll_data2[(dll_data2 >= dll_min[params['PARTICLE']]) * (dll_data2 < dll_max[params['PARTICLE']])]
     mva_data = eval_proba[eval_labels==signal, 1]
-    mva_data = mva_data[(dll_data >= dll_min[params['PARTICLE']]) * (dll_data < dll_max[params['PARTICLE']])]
+    mva_data = mva_data[(dll_data2 >= dll_min[params['PARTICLE']]) * (dll_data2 < dll_max[params['PARTICLE']])]
 
     if log:
         plt.hist2d(dll_data, mva_data, bins=n_bins_2d, norm = mpl.colors.LogNorm())
