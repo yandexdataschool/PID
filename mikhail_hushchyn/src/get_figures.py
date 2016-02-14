@@ -249,7 +249,7 @@ def Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path
 
     for var in features:
 
-        var_data2 = eval_data[[var]].values
+        var_data2 = eval_data[var].values
         var_data = var_data2[var_data2 != -999]
 
         p_types = numpy.abs(eval_data[u'MCParticleType'].values)
