@@ -846,11 +846,11 @@ def CombDLL(params, eval_data, eval_proba, eval_labels, features, log=False, pat
         plt.legend(loc='best')
 
     if not log:
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + comb_dll + "_Liny.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + comb_dll + "_Liny.png")
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + comb_dll + "_Liny.pdf")
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + comb_dll + "_Liny.png")
     else:
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + comb_dll + "_Logy.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + comb_dll + "_Logy.png")
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + comb_dll + "_Logy.pdf")
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + comb_dll + "_Logy.png")
 
     plt.close()
     return 1
@@ -914,11 +914,11 @@ def MVAOut(params, eval_data, eval_proba, eval_labels, features, log=False, path
         plt.legend(loc='best')
 
     if not log:
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + "MVAOut" + "_Liny.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + "MVAOut" + "_Liny.png")
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "MVAOut" + "_Liny.pdf")
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "MVAOut" + "_Liny.png")
     else:
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + "MVAOut" + "_Logy.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + "MVAOut" + "_Logy.png")
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "MVAOut" + "_Logy.pdf")
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "MVAOut" + "_Logy.png")
 
     plt.close()
     return 1
@@ -959,8 +959,8 @@ def EffPurity(params, eval_data, eval_proba, eval_labels, features, log=False, p
 
     plt.legend(loc='best')
 
-    plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + "-IDEff_V_Electron-Purity.pdf")
-    plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + "-IDEff_V_Electron-Purity.png")
+    plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-IDEff_V_Electron-Purity.pdf")
+    plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-IDEff_V_Electron-Purity.png")
 
     plt.close()
     return 1
@@ -1019,9 +1019,9 @@ def EffMissIDEff(params, eval_data, eval_proba, eval_labels, features, path="pic
         plt.yscale('log', nonposy='clip')
         plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-IDEff_V_" + particle + "-MissIDEff.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-IDEff_V_" + particle + "-MissIDEff.png")
 
 
@@ -1080,14 +1080,14 @@ def EffOverallMissIDEff(params, eval_data, eval_proba, eval_labels, features, lo
         plt.yscale('log', nonposy='clip')
 
     if log:
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-IDEff_V_" + "OverallMissIDEff_Logy.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-IDEff_V_" + "OverallMissIDEff_Logy.png")
     else:
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-IDEff_V_" + "OverallMissIDEff_Liny.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-IDEff_V_" + "OverallMissIDEff_Liny.png")
 
 
@@ -1129,24 +1129,24 @@ def MVADLL(params, eval_data, eval_proba, eval_labels, features, log=False, sign
     plt.ylabel(params['TRACK'] + " " + params['PARTICLE'] + " MVA Output")
 
     if log and signal:
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Signal_Logz.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Signal_Logz.png")
     elif log and not signal:
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Background_Logz.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Background_Logz.png")
     elif not log and signal:
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Signal_Linz.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Signal_Linz.png")
     else:
-        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Background_Linz.pdf")
-        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+        plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Background_Linz.png")
     plt.close()
 
@@ -1181,9 +1181,9 @@ def PurityVMVAOut(params, eval_data, eval_proba, eval_labels, features, path="pi
 
     plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-    plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+    plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                 "-PurityVMVAOut.pdf")
-    plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+    plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                 "-PurityVMVAOut.png")
 
     plt.close()
@@ -1220,9 +1220,9 @@ def PurityVCombDLL(params, eval_data, eval_proba, eval_labels, features, path="p
 
     plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-    plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+    plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                 "-PurityVCombDLL.pdf")
-    plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + " " + \
+    plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                 "-PurityVCombDLL.png")
 
     plt.close()
