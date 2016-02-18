@@ -1229,7 +1229,7 @@ def PurityVMVAOut(params, eval_data, eval_proba, eval_labels, features, path="pi
 
     plt.figure(figsize=(10,7))
 
-    purs, pur_errs, edges, mva_errs = get_pur(eval_proba[:, 1], eval_labels, 100, 0, 1)
+    purs, pur_errs, edges, mva_errs = get_pur(eval_proba[:, 1], eval_labels, n_bins, 0, 1)
 
     plt.scatter(edges, purs)
     plt.errorbar(edges, purs, xerr=mva_errs, yerr=pur_errs, fmt='none')
@@ -1270,7 +1270,7 @@ def PurityVCombDLL(params, eval_data, eval_proba, eval_labels, features, path="p
 
     comb_dll = comb_dlls[params['PARTICLE']]
 
-    purs, pur_errs, edges, mva_errs = get_pur(eval_data[comb_dll].values, eval_labels, 100,
+    purs, pur_errs, edges, mva_errs = get_pur(eval_data[comb_dll].values, eval_labels, n_bins,
                                           dll_min[params['PARTICLE']], dll_max[params['PARTICLE']])
 
     plt.scatter(edges, purs)
