@@ -198,6 +198,9 @@ def get_train_data(params, location='http'):
 
     features = numpy.array(features)
     features.tofile(WORKPATH + "/train_features.txt", sep="\n")
+
+    spectator_features = numpy.array(spectator_features)
+    spectator_features.tofile(WORKPATH + "/spectator_features.txt", sep="\n")
     LOG.write("Names of train features were saved.\n")
     LOG.flush()
     print "Names of train features were saved."
@@ -292,8 +295,8 @@ def get_train_data(params, location='http'):
 
     # Data Frames for trainer
     try:
-        data_train_signal = pandas.read_csv(WORKPATH + '/data_train_signal.csv')
-        data_train_bkg = pandas.read_csv(WORKPATH + '/data_train_bkg.csv')
+        data_train_signal = pandas.read_csv(WORKPATH + '/data_train_signal.csv', usecols=['MCParticleType'])
+        data_train_bkg = pandas.read_csv(WORKPATH + '/data_train_bkg.csv', usecols=['MCParticleType'])
 
         selected_tracks = len(data_train_signal) + len(data_train_bkg)
         signal_tracks = len(data_train_signal)
@@ -302,6 +305,9 @@ def get_train_data(params, location='http'):
         for pdg in selected_tracks_by_type.keys():
             selected_tracks_by_type[pdg] = len(data_train_signal[numpy.abs(data_train_signal.MCParticleType) == pdg]) + \
                                            len(data_train_bkg[numpy.abs(data_train_bkg.MCParticleType) == pdg])
+
+        data_train_signal = pandas.DataFrame()
+        data_train_bkg = pandas.DataFrame()
 
     except:
         data_train_signal = pandas.DataFrame()
@@ -329,7 +335,7 @@ def get_train_data(params, location='http'):
         elif location == 'http':
             data_file_path_raw, data_file_tree = data_file.split(':')
             data_file_path = data_file_path_raw.replace("/r02/lhcb/jonesc/ANNPID/", "http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/")
-            data_file_path = data_file_path_raw.replace("/r03/lhcb/jonesc/ANNPID/", "http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/")
+            data_file_path = data_file_path.replace("/r03/lhcb/jonesc/ANNPID/", "http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/")
         else:
             print "File path is incorrect. Check the configs."
             return 0
@@ -386,11 +392,9 @@ def get_train_data(params, location='http'):
             target = mc_particle_type == particle_pdg
 
             # Equal mix ?
-            if not selected_tracks_by_type.has_key(mc_particle_type):
-                continue
-
-            if (equal_by_type and selected_tracks_by_type[mc_particle_type] >= n_per_type) :
-                continue
+            if selected_tracks_by_type.has_key(mc_particle_type):
+                if (equal_by_type and selected_tracks_by_type[mc_particle_type] >= n_per_type) :
+                    continue
 
             # Background type selection for training
             if not ( target or all_pid_type == bkg_pdg or mc_particle_type == int(bkg_pdg) ):
@@ -419,8 +423,9 @@ def get_train_data(params, location='http'):
 
             # count tracks
             selected_tracks += 1
-            selected_tracks_file += 1;
-            selected_tracks_by_type[mc_particle_type] += 1
+            selected_tracks_file += 1
+            if selected_tracks_by_type.has_key(mc_particle_type):
+                selected_tracks_by_type[mc_particle_type] += 1
 
 
             # Found enough tracks ?
@@ -435,8 +440,15 @@ def get_train_data(params, location='http'):
         LOG.write("Link to file was writen in viewed_files.txt\n")
         LOG.flush()
 
-        data_train_signal.to_csv(WORKPATH + '/data_train_signal.csv')
-        data_train_bkg.to_csv(WORKPATH + '/data_train_bkg.csv')
+        if os.path.exists(WORKPATH + '/data_train_signal.csv'):
+            data_train_signal.to_csv(WORKPATH + '/data_train_signal.csv', mode='a', header=False)
+        else:
+            data_train_signal.to_csv(WORKPATH + '/data_train_signal.csv', mode='a', header=True)
+
+        if os.path.exists(WORKPATH + '/data_train_bkg.csv'):
+            data_train_bkg.to_csv(WORKPATH + '/data_train_bkg.csv', mode='a', header=False)
+        else:
+            data_train_bkg.to_csv(WORKPATH + '/data_train_bkg.csv', mode='a', header=True)
 
         LOG.write("n_training_tracks = " + str(n_training_tracks) + "\n")
         LOG.write("selected_tracks = " + str(selected_tracks) + "\n")
@@ -467,8 +479,8 @@ def get_train_data(params, location='http'):
     LOG.flush()
     print "Reading train data is completed.\n"
 
-    data_train_signal.to_csv(WORKPATH + '/data_train_signal.csv')
-    data_train_bkg.to_csv(WORKPATH + '/data_train_bkg.csv')
+    # data_train_signal.to_csv(WORKPATH + '/data_train_signal.csv')
+    # data_train_bkg.to_csv(WORKPATH + '/data_train_bkg.csv')
 
     LOG.write("Writing train data is completed.\n")
     LOG.flush()
@@ -477,4 +489,4 @@ def get_train_data(params, location='http'):
 
     LOG.close()
 
-    return data_train_signal, data_train_bkg, features
+    return WORKPATH
