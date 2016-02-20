@@ -5,8 +5,8 @@ import pandas
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
-dll_min = {'Electron': -15., 'Muon': -15., 'Pion': -100., 'Kaon': -50., 'Proton': -50, 'Ghost': 0.}
-dll_max = {'Electron': 15., 'Muon': 15., 'Pion': 100., 'Kaon': 50., 'Proton': 50, 'Ghost': 1.}
+dll_min = {'Electron': -20., 'Muon': -20., 'Pion': -150., 'Kaon': -150., 'Proton': -150, 'Ghost': 0.}
+dll_max = {'Electron': 20., 'Muon': 20., 'Pion': 150., 'Kaon': 150., 'Proton': 150, 'Ghost': 1.}
 comb_dlls = {'Electron': "CombDLLe", 'Muon': "CombDLLmu", 'Pion': "CombDLLpi",
              'Kaon': "CombDLLk", 'Proton': "CombDLLp", 'Ghost': "TrackGhostProbability"}
 particle_pdg_codes = {"Ghost": 0, "Electron": 11, "Muon": 13, "Pion": 211, "Kaon": 321, "Proton": 2212}
@@ -15,7 +15,7 @@ particle_pdg_codes = {"Ghost": 0, "Electron": 11, "Muon": 13, "Pion": 211, "Kaon
 n_cuts_mva = 80
 n_cuts_dll = 150
 
-n_bins = 100
+n_bins = 20
 n_bins_2d = 50
 
 #mvastep = 1. / (n_cuts_mva - 1)
@@ -276,6 +276,8 @@ def Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path
             plt.grid(True, lw = 2, ls = ':', c = '.75')
             plt.xlim(var_data.min(), var_data.max())
 
+            plt.title("Histogram. " + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
+
             if (n_in_bins+n_errs).max() > ymax:
                 ymax=(n_in_bins+n_errs).max()
             if len(n_in_bins[n_in_bins > 0]):
@@ -283,7 +285,9 @@ def Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path
                     ymin = n_in_bins[n_in_bins > 0].min()
 
             plt.ylim(ymin=0, ymax=ymax)
-            plt.legend(loc='best')
+            plt.legend(loc='best', prop={'size':15})
+            plt.xticks(size=15)
+            plt.yticks(size=15)
 
             if log:
                 if ymin >= ymax:
@@ -350,11 +354,15 @@ def MVAVInputs(params, eval_data, eval_proba, eval_labels, features, path="pic")
 
             plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " " + var, size=15)
             plt.ylabel(params['TRACK'] + " " + params['PARTICLE'] + " " + "MVA Output", size=15)
-            plt.ylim(0, 1)
+            plt.ylim(0, 1.1)
+            plt.plot([x_min, x_max], [1,1], 'k--', linewidth=1)
             plt.xlim(x_min, x_max)
-            plt.yticks(numpy.arange(0, 1.01, 0.1))
+            plt.yticks(numpy.arange(0, 1.01, 0.1), size=15)
+            plt.xticks(size=15)
             plt.grid(True, lw = 2, ls = ':', c = '.75')
-            plt.legend(loc='best')
+            plt.legend(loc='best', prop={'size':15})
+
+            plt.title(params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
 
         plt.savefig(path + "/pdf/MVAVInputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.pdf")
         plt.savefig(path + "/png/MVAVInputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.png")
@@ -416,7 +424,11 @@ def DLLVInputs(params, eval_data, eval_proba, eval_labels, features, path="pic")
             plt.ylim(dll_min[params['PARTICLE']], dll_max[params['PARTICLE']])
             plt.xlim(x_min, x_max)
             plt.grid(True, lw = 2, ls = ':', c = '.75')
-            plt.legend(loc='best')
+            plt.legend(loc='best', prop={'size':15})
+            plt.xticks(size=15)
+            plt.yticks(size=15)
+
+            plt.title(params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
 
 
         plt.savefig(path + "/pdf/DLLVInputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.pdf")
@@ -469,14 +481,17 @@ def MVAEffForDLLCut(params, eval_data, eval_proba, eval_labels, features, path="
             plt.ylabel("Efficiency / %", size=15)
             plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " MVA cut value", size=15)
 
+            plt.title("CombDLL cut = %.3f. " % dll_cut + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
+
             plt.xlim(0, 1)
-            plt.xticks(numpy.arange(0, 1.01, 0.1))
-            plt.ylim(0, 100)
-            plt.yticks(numpy.arange(0, 101, 10))
+            plt.xticks(numpy.arange(0, 1.01, 0.1), size=15)
+            plt.ylim(0, 110)
+            plt.plot([0, 1], [100,100], 'k--', linewidth=1)
+            plt.yticks(numpy.arange(0, 111, 10), size=15)
 
             plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-            plt.legend(loc='best')
+            plt.legend(loc='best', prop={'size':15})
 
         plt.savefig(path + "/pdf/MVAEffForDLLCut" + "/" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-MVAEff-DLLCut%.3f.pdf" % dll_cut)
@@ -531,13 +546,17 @@ def DLLEffForMVACut(params, eval_data, eval_proba, eval_labels, features, path="
             plt.ylabel("Efficiency / %", size=15)
             plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " CombDLL cut value", size=15)
 
+            plt.title("MVA cut = %.3f. " % mva_cut + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
+
             plt.xlim(dll_min[params['PARTICLE']], dll_max[params['PARTICLE']])
-            plt.ylim(0, 100)
-            plt.yticks(numpy.arange(0, 101, 10))
+            plt.ylim(0, 110)
+            plt.plot([dll_min[params['PARTICLE']], dll_max[params['PARTICLE']]], [100,100], 'k--', linewidth=1)
+            plt.yticks(numpy.arange(0, 111, 10), size=15)
+            plt.xticks(size=15)
 
             plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-            plt.legend(loc='best')
+            plt.legend(loc='best', prop={'size':15})
 
 
         plt.savefig(path + "/pdf/DLLEffForMVACut" + "/" + params['TRACK'] + "_" + \
@@ -592,13 +611,18 @@ def DLLEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path="pi
             plt.ylabel("Efficiency / %")
             plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " Momentum / MeV/c")
 
+            plt.title("CombDLL cut = %.3f. " % dll_cut + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
+
             plt.xlim(0, 100000)
-            plt.ylim(0, 100)
-            plt.yticks(numpy.arange(0, 101, 10))
+            plt.ylim(0, 110)
+            plt.plot([0, 100000], [100,100], 'k--', linewidth=1)
+
+            plt.yticks(numpy.arange(0, 111, 10), size=15)
+            plt.xticks(size=15)
 
             plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-            plt.legend(loc='best')
+            plt.legend(loc='best', prop={'size':15})
 
         plt.savefig(path + "/pdf/DLLEffVTrackP" + "/DLLEffVTrackP_" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-DLLCut%.4f.pdf" % dll_cut)
@@ -652,13 +676,17 @@ def DLLEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path="p
             plt.ylabel("Efficiency / %", size=15)
             plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " Transverse Momentum / MeV/c", size=15)
 
-            plt.ylim(0,100)
+            plt.title("CombDLL cut = %.3f. " % dll_cut + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
+
+            plt.ylim(0,110)
             plt.xlim(0, 10000)
-            plt.yticks(numpy.arange(0, 101, 10))
+            plt.plot([0, 10000], [100,100], 'k--', linewidth=1)
+            plt.yticks(numpy.arange(0, 111, 10), size=15)
+            plt.xticks(size=15)
 
             plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-            plt.legend(loc='best')
+            plt.legend(loc='best', prop={'size':15})
 
         plt.savefig(path + "/pdf/DLLEffVTrackPt" + "/DLLEffVTrackPt_" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-DLLCut%.4f.pdf" % dll_cut)
@@ -711,13 +739,17 @@ def MVAEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path="pi
             plt.ylabel("Efficiency / %", size=15)
             plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " Momentum / MeV/c", size=15)
 
+            plt.title("MVA cut = %.3f. " % mva_cut + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
+
             plt.xlim(0, 100000)
-            plt.ylim(0,100)
-            plt.yticks(numpy.arange(0, 101, 10))
+            plt.ylim(0,110)
+            plt.plot([0, 100000], [100,100], 'k--', linewidth=1)
+            plt.yticks(numpy.arange(0, 111, 10), size=15)
+            plt.xticks(size=15)
 
             plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-            plt.legend(loc='best')
+            plt.legend(loc='best', prop={'size':15})
 
         plt.savefig(path + "/pdf/MVAEffVTrackP" + "/MVAEffVTrackP_" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-MVACut%.4f.pdf" % mva_cut)
@@ -771,13 +803,17 @@ def MVAEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path="p
             plt.ylabel("Efficiency / %", size=15)
             plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " Transverse Momentum / MeV/c", size=15)
 
+            plt.title("MVA cut = %.3f. " % mva_cut + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
+
             plt.xlim(0, 10000)
-            plt.ylim(0, 100)
-            plt.yticks(numpy.arange(0, 101, 10))
+            plt.ylim(0, 110)
+            plt.plot([0, 10000], [100,100], 'k--', linewidth=1)
+            plt.yticks(numpy.arange(0, 111, 10), size=15)
+            plt.xticks(size=15)
 
             plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-            plt.legend(loc='best')
+            plt.legend(loc='best', prop={'size':15})
 
         plt.savefig(path + "/pdf/MVAEffVTrackPt" + "/MVAEffVTrackPt_" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-MVACut%.4f.pdf" % mva_cut)
@@ -834,6 +870,10 @@ def CombDLL(params, eval_data, eval_proba, eval_labels, features, log=False, pat
 
         plt.xlim(dll_min[params['PARTICLE']], dll_max[params['PARTICLE']])
         plt.ylim(0, ymax)
+        plt.xticks(size=15)
+        plt.yticks(size=15)
+
+        plt.title("Histogram. " + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
 
         if log:
             if ymax <= ymin:
@@ -843,7 +883,7 @@ def CombDLL(params, eval_data, eval_proba, eval_labels, features, log=False, pat
 
         plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-        plt.legend(loc='best')
+        plt.legend(loc='best', prop={'size':15})
 
     if not log:
         plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + comb_dll + "_Liny.pdf")
@@ -898,8 +938,9 @@ def MVAOut(params, eval_data, eval_proba, eval_labels, features, log=False, path
                 ymin = n_in_bins[n_in_bins > 0].min()
 
         plt.xlim(0, 1)
-        plt.xticks(numpy.arange(0, 1.01, .10))
+        plt.xticks(numpy.arange(0, 1.01, .10), size=15)
         plt.ylim(0, ymax)
+        plt.yticks(size=15)
 
         if log:
             if ymax <= ymin:
@@ -911,7 +952,9 @@ def MVAOut(params, eval_data, eval_proba, eval_labels, features, log=False, path
 
         plt.ylabel("")
         plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " MVA Output", size=15)
-        plt.legend(loc='best')
+        plt.legend(loc='best', prop={'size':15})
+
+        plt.title("Histogram. " + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
 
     if not log:
         plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "MVAOut" + "_Liny.pdf")
@@ -951,13 +994,16 @@ def EffPurity(params, eval_data, eval_proba, eval_labels, features, log=False, p
     plt.ylabel("Purity / %", size=15)
     plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " Efficiency / %", size=15)
 
-    plt.xticks(numpy.arange(0, 101, 10))
-    plt.yticks(numpy.arange(0, 101, 10))
+    plt.title(params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
+
+    plt.xticks(numpy.arange(0, 101, 10), size=15)
+    plt.yticks(numpy.arange(0, 111, 10), size=15)
     plt.xlim(0, 100)
-    plt.ylim(0, 100)
+    plt.ylim(0, 110)
+    plt.plot([0, 100], [100,100], 'k--', linewidth=1)
     plt.grid(True, lw = 2, ls = ':', c = '.75')
 
-    plt.legend(loc='best')
+    plt.legend(loc='best', prop={'size':15})
 
     plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-IDEff_V_Electron-Purity.pdf")
     plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-IDEff_V_Electron-Purity.png")
@@ -1011,12 +1057,17 @@ def EffMissIDEff(params, eval_data, eval_proba, eval_labels, features, path="pic
 
         plt.ylabel(particle + " MissID Efficiency / %", size=15)
         plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " Efficiency / %", size=15)
-        plt.legend(loc='best')
+        plt.title(params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
+        plt.legend(loc='best', prop={'size':15})
 
-        plt.xticks(numpy.arange(0, 101, 10))
+        plt.xticks(numpy.arange(0, 101, 10), size=15)
         plt.xlim(0, 100)
+        #plt.plot([0, 100000], [100,100], color='k', linewidth=2)
 
         plt.yscale('log', nonposy='clip')
+        plt.ylim(0, 110)
+        plt.yticks(size=15)
+        plt.plot([0, 100], [100,100], 'k--', linewidth=1)
         plt.grid(True, lw = 2, ls = ':', c = '.75')
 
         plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
@@ -1069,15 +1120,21 @@ def EffOverallMissIDEff(params, eval_data, eval_proba, eval_labels, features, lo
 
     plt.ylabel("Overall MissID Efficiency / %", size=15)
     plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " Efficiency / %", size=15)
-    plt.legend(loc='best')
+    plt.title(params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
+    plt.legend(loc='best', prop={'size':15})
 
-    plt.xticks(numpy.arange(0, 101, 10))
+    plt.xticks(numpy.arange(0, 101, 10), size=15)
     plt.xlim(0, 100)
+    plt.ylim(0, 110)
+    plt.yticks(size=15)
+    plt.plot([0, 100], [100,100], 'k--', linewidth=1)
 
     plt.grid(True, lw = 2, ls = ':', c = '.75')
 
     if log:
         plt.yscale('log', nonposy='clip')
+        plt.ylim(0, 110)
+        plt.plot([0, 100], [100,100], 'k--', linewidth=1)
 
     if log:
         plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
@@ -1123,27 +1180,33 @@ def MVADLL(params, eval_data, eval_proba, eval_labels, features, log=False, sign
     plt.colorbar()
 
     plt.ylim(0, 1)
+    plt.yticks(size=15)
     plt.xlim(dll_min[params['PARTICLE']], dll_max[params['PARTICLE']])
+    plt.xticks(size=15)
 
     plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " " + comb_dll)
     plt.ylabel(params['TRACK'] + " " + params['PARTICLE'] + " MVA Output")
 
     if log and signal:
+        plt.title("Signal histogram." + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
         plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Signal_Logz.pdf")
         plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Signal_Logz.png")
     elif log and not signal:
+        plt.title("Background histogram." + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
         plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Background_Logz.pdf")
         plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Background_Logz.png")
     elif not log and signal:
+        plt.title("Signal histogram." + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
         plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Signal_Linz.pdf")
         plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Signal_Linz.png")
     else:
+        plt.title("Background histogram." + params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
         plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Background_Linz.pdf")
         plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
@@ -1166,18 +1229,20 @@ def PurityVMVAOut(params, eval_data, eval_proba, eval_labels, features, path="pi
 
     plt.figure(figsize=(10,7))
 
-    purs, pur_errs, edges, mva_errs = get_pur(eval_proba[:, 1], eval_labels, 100, 0, 1)
+    purs, pur_errs, edges, mva_errs = get_pur(eval_proba[:, 1], eval_labels, n_bins, 0, 1)
 
     plt.scatter(edges, purs)
     plt.errorbar(edges, purs, xerr=mva_errs, yerr=pur_errs, fmt='none')
 
-    plt.ylim(0,100)
+    plt.ylim(0,110)
     plt.xlim(0, 1)
     plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " MVA Output", size=15)
     plt.ylabel('Purity / %', size=15)
+    plt.title(params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
 
-    plt.xticks(numpy.arange(0, 1.01, .10))
-    plt.yticks(numpy.arange(0, 101, 10))
+    plt.xticks(numpy.arange(0, 1.01, .10), size=15)
+    plt.yticks(numpy.arange(0, 111, 10), size=15)
+    plt.plot([0, 1.0], [100,100], 'k--', linewidth=1)
 
     plt.grid(True, lw = 2, ls = ':', c = '.75')
 
@@ -1205,18 +1270,21 @@ def PurityVCombDLL(params, eval_data, eval_proba, eval_labels, features, path="p
 
     comb_dll = comb_dlls[params['PARTICLE']]
 
-    purs, pur_errs, edges, mva_errs = get_pur(eval_data[comb_dll].values, eval_labels, 100,
+    purs, pur_errs, edges, mva_errs = get_pur(eval_data[comb_dll].values, eval_labels, n_bins,
                                           dll_min[params['PARTICLE']], dll_max[params['PARTICLE']])
 
     plt.scatter(edges, purs)
     plt.errorbar(edges, purs, xerr=mva_errs, yerr=pur_errs, fmt='none')
 
-    plt.ylim(0,100)
+    plt.ylim(0,110)
     plt.xlim(dll_min[params['PARTICLE']], dll_max[params['PARTICLE']])
     plt.xlabel(params['TRACK'] + " " + params['PARTICLE'] + " " + comb_dll, size=15)
     plt.ylabel('Purity / %', size=15)
+    plt.title(params['TRACK'] + " " + params['PARTICLE'] + " Signal.", size=15)
 
-    plt.yticks(numpy.arange(0, 101, 10))
+    plt.yticks(numpy.arange(0, 111, 10), size=15)
+    plt.xticks(size=15)
+    plt.plot([dll_min[params['PARTICLE']], dll_max[params['PARTICLE']]], [100,100], 'k--', linewidth=1)
 
     plt.grid(True, lw = 2, ls = ':', c = '.75')
 
