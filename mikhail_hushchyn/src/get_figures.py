@@ -120,6 +120,11 @@ def get_eff_v_var(mva, mva_cut, var, bins, min_var, max_var):
     step = 1. * (max_var - min_var) / bins
     edges = [min_var + i * step for i in range(0, bins + 1)]
 
+    # var_copy = var.copy()
+    # var_copy.sort(axis=0)
+    # N = len(var_copy) / bins
+    # edges = [var_copy[i * N] for i in range(0, bins)] + [var_copy[-1]]
+
     effs = []
     vars_bins = []
     eff_errs = []
@@ -139,7 +144,7 @@ def get_eff_v_var(mva, mva_cut, var, bins, min_var, max_var):
         eff_errs.append(one_eff_err)
 
         vars_bins.append(0.5 * (right + left))
-        var_errs.append(0.5 * step)
+        var_errs.append(0.5 * (right - left))
 
     return effs, vars_bins, eff_errs, var_errs
 
@@ -294,16 +299,17 @@ def Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path
                 plt.ylim(ymin, ymax)
                 plt.yscale('log', nonposy='clip')
 
-            if not log:
-                plt.title("Inputs_" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny", size=15)
-                plt.savefig(path + "/pdf/Inputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.pdf")
-                plt.savefig(path + "/png/Inputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.png")
-            else:
-                plt.title("Inputs_" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Logy", size=15)
-                plt.savefig(path + "/pdf/Inputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Logy.pdf")
-                plt.savefig(path + "/png/Inputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Logy.png")
+        if not log:
+            plt.title("Inputs_" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny", size=15)
+            plt.savefig(path + "/pdf/Inputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.pdf")
+            plt.savefig(path + "/png/Inputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.png")
+        else:
+            plt.title("Inputs_" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Logy", size=15)
+            plt.savefig(path + "/pdf/Inputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Logy.pdf")
+            plt.savefig(path + "/png/Inputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Logy.png")
 
-        plt.close()
+        plt.clf()
+        plt.close('all')
     return 1
 
 # MVA output V input profiles
@@ -368,7 +374,8 @@ def MVAVInputs(params, eval_data, eval_proba, eval_labels, features, path="pic")
         plt.savefig(path + "/pdf/MVAVInputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.pdf")
         plt.savefig(path + "/png/MVAVInputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.png")
 
-        plt.close()
+        plt.clf()
+        plt.close('all')
 
     return 1
 
@@ -435,8 +442,8 @@ def DLLVInputs(params, eval_data, eval_proba, eval_labels, features, path="pic")
         plt.savefig(path + "/pdf/DLLVInputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.pdf")
         plt.savefig(path + "/png/DLLVInputs" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-" + var + "_Liny.png")
 
-
-        plt.close()
+        plt.clf()
+        plt.close('all')
 
     return 1
 
@@ -498,8 +505,8 @@ def MVAEffForDLLCut(params, eval_data, eval_proba, eval_labels, features, path="
         plt.savefig(path + "/png/MVAEffForDLLCut" + "/" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-MVAEff-DLLCut%.3f.png" % dll_cut)
 
-
-        plt.close()
+        plt.clf()
+        plt.close('all')
 
     return 1
 
@@ -563,7 +570,8 @@ def DLLEffForMVACut(params, eval_data, eval_proba, eval_labels, features, path="
         plt.savefig(path + "/png/DLLEffForMVACut" + "/" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-DLLEff-MVACut%.4f.png" % mva_cut)
 
-        plt.close()
+        plt.clf()
+        plt.close('all')
 
     return 1
 
@@ -627,7 +635,8 @@ def DLLEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path="pi
         plt.savefig(path + "/png/DLLEffVTrackP" + "/DLLEffVTrackP_" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-DLLCut%.4f.png" % dll_cut)
 
-        plt.close()
+        plt.clf()
+        plt.close('all')
 
     return 1
 
@@ -689,8 +698,8 @@ def DLLEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path="p
                     params['PARTICLE'] + "-DLLCut%.4f.pdf" % dll_cut)
         plt.savefig(path + "/png/DLLEffVTrackPt" + "/DLLEffVTrackPt_" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-DLLCut%.4f.png" % dll_cut)
-
-        plt.close()
+        plt.clf()
+        plt.close('all')
 
     return 1
 
@@ -752,7 +761,8 @@ def MVAEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path="pi
         plt.savefig(path + "/png/MVAEffVTrackP" + "/MVAEffVTrackP_" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-MVACut%.4f.png" % mva_cut)
 
-        plt.close()
+        plt.clf()
+        plt.close('all')
 
     return 1
 
@@ -815,7 +825,8 @@ def MVAEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path="p
         plt.savefig(path + "/png/MVAEffVTrackPt" + "/MVAEffVTrackPt_" + params['TRACK'] + "_" + \
                     params['PARTICLE'] + "-MVACut%.4f.png" % mva_cut)
 
-        plt.close()
+        plt.clf()
+        plt.close('all')
     return 1
 
 
@@ -887,7 +898,8 @@ def CombDLL(params, eval_data, eval_proba, eval_labels, features, log=False, pat
         plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + comb_dll + "_Logy.pdf")
         plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + comb_dll + "_Logy.png")
 
-    plt.close()
+    plt.clf()
+    plt.close('all')
     return 1
 
 
@@ -958,7 +970,8 @@ def MVAOut(params, eval_data, eval_proba, eval_labels, features, log=False, path
         plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "MVAOut" + "_Logy.pdf")
         plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "MVAOut" + "_Logy.png")
 
-    plt.close()
+    plt.clf()
+    plt.close('all')
     return 1
 
 # Purity V mva
@@ -1002,7 +1015,8 @@ def EffPurity(params, eval_data, eval_proba, eval_labels, features, log=False, p
     plt.savefig(path + "/pdf" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-IDEff_V_Electron-Purity.pdf")
     plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + "-IDEff_V_Electron-Purity.png")
 
-    plt.close()
+    plt.clf()
+    plt.close('all')
     return 1
 
 
@@ -1071,7 +1085,8 @@ def EffMissIDEff(params, eval_data, eval_proba, eval_labels, features, path="pic
                     "-IDEff_V_" + particle + "-MisIDEff.png")
 
 
-        plt.close()
+        plt.clf()
+        plt.close('all')
 
     return 1
 
@@ -1144,7 +1159,8 @@ def EffOverallMissIDEff(params, eval_data, eval_proba, eval_labels, features, lo
                     "-IDEff_V_" + "OverallMisIDEff_Liny.png")
 
 
-    plt.close()
+    plt.clf()
+    plt.close('all')
 
     return 1
 
@@ -1207,7 +1223,8 @@ def MVADLL(params, eval_data, eval_proba, eval_labels, features, log=False, sign
                     "-MVAOutVDLL-Background_Linz.pdf")
         plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                     "-MVAOutVDLL-Background_Linz.png")
-    plt.close()
+    plt.clf()
+    plt.close('all')
 
 
     return 1
@@ -1247,7 +1264,8 @@ def PurityVMVAOut(params, eval_data, eval_proba, eval_labels, features, path="pi
     plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                 "-PurityVMVAOut.png")
 
-    plt.close()
+    plt.clf()
+    plt.close('all')
 
     return 1
 
@@ -1289,7 +1307,8 @@ def PurityVCombDLL(params, eval_data, eval_proba, eval_labels, features, path="p
     plt.savefig(path + "/png" + "/" + params['TRACK'] + "_" + params['PARTICLE'] + \
                 "-PurityVCombDLL.png")
 
-    plt.close()
+    plt.clf()
+    plt.close('all')
 
     return 1
 
