@@ -348,3 +348,141 @@ def get_flatness_ratio(flatness_one, flatness_two, save_path=None):
         flatness.to_csv(save_path + "/rel_flatness.csv")
 
     return flatness
+
+from rep.utils import get_efficiencies
+from rep.plotting import ErrorPlot
+
+def flatness_p_figure(proba, track_p, track_name, particle_name, save_path=None, show=False):
+
+    """
+    Plot signal efficiency vs TrackP figure.
+    :param proba: array, shape = [n_samples], predicted probabilities.
+    :param track_p: array, shape = [n_samples], TrackP values.
+    :param track_name: string, name.
+    :param particle_name: string, name.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    """
+
+    thresholds = numpy.percentile(proba, 100 - numpy.array([5, 20, 40, 60, 80]))
+
+    eff = get_efficiencies(proba,
+                           track_p,
+                           bins_number=30,
+                           errors=True,
+                           ignored_sideband=0,
+                           thresholds=thresholds)
+
+    for i in thresholds:
+        eff[i] = (eff[i][0], 100. * eff[i][1], 100. * eff[i][2], eff[i][3])
+
+    plot_fig = ErrorPlot(eff)
+    plot_fig.ylim = (0, 100)
+
+    plot_fig.plot(new_plot=True, figsize=(10,7))
+    plt.legend(['Eff = 5 %', 'Eff = 20 %', 'Eff = 40 %', 'Eff = 60 %', 'Eff = 80 %'], loc='best',prop={'size':15})
+    plt.xlabel(track_name + ' ' + particle_name + ' Momentum / MeV/c', size=15)
+    plt.xticks(size=15)
+    plt.ylabel('Efficiency / %', size=15)
+    plt.yticks(size=15)
+    plt.title('Flatness_SignalMVAEffVTrackP_' + track_name + ' ' + particle_name, size=15)
+
+    if save_path != None:
+        plt.savefig(save_path + "/" + 'Flatness_SignalMVAEffVTrackP_' + track_name + '_' + particle_name + ".png")
+
+    if show == True:
+        plt.show()
+
+    plt.clf()
+    plt.close()
+
+
+def flatness_pt_figure(proba, track_pt, track_name, particle_name, save_path=None, show=False):
+
+    """
+    Plot signal efficiency vs TrackPt figure.
+    :param proba: array, shape = [n_samples], predicted probabilities.
+    :param track_p: array, shape = [n_samples], TrackPt values.
+    :param track_name: string, name.
+    :param particle_name: string, name.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    """
+
+    thresholds = numpy.percentile(proba, 100 - numpy.array([5, 20, 40, 60, 80]))
+
+    eff = get_efficiencies(proba,
+                           track_pt,
+                           bins_number=30,
+                           errors=True,
+                           ignored_sideband=0,
+                           thresholds=thresholds)
+
+    for i in thresholds:
+        eff[i] = (eff[i][0], 100. * eff[i][1], 100. * eff[i][2], eff[i][3])
+
+    plot_fig = ErrorPlot(eff)
+    plot_fig.ylim = (0, 100)
+
+    plot_fig.plot(new_plot=True, figsize=(10,7))
+    plt.legend(['Eff = 5 %', 'Eff = 20 %', 'Eff = 40 %', 'Eff = 60 %', 'Eff = 80 %'], loc='best',prop={'size':15})
+    plt.xlabel(track_name + ' ' + particle_name + ' Transverse Momentum / MeV/c', size=15)
+    plt.xticks(size=15)
+    plt.ylabel('Efficiency / %', size=15)
+    plt.yticks(size=15)
+    plt.title('Flatness_SignalMVAEffVTrackPt_' + track_name + ' ' + particle_name, size=15)
+
+    if save_path != None:
+        plt.savefig(save_path + "/" + 'Flatness_SignalMVAEffVTrackPt_' + track_name + '_' + particle_name + ".png")
+
+    if show == True:
+        plt.show()
+
+    plt.clf()
+    plt.close()
+
+
+def get_all_flatness_figures(data, probas, labels, track_name, particle_names, save_path=None, show=False):
+
+    """
+    Plot signal efficiency vs TrackP figure.
+    :param data: pandas.dataFrame() data.
+    :param probas: bdarray, shape = [n_samples, n_classes], predicted probabilities.
+    :param track_p: array, shape = [n_samples], TrackP values.
+    :param track_name: string, name.
+    :param particle_names: list of strings, particle names.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    """
+
+    GeV = 1000
+    limits = {"TrackP": [100*GeV, 0],
+              "TrackPt": [10*GeV, 0] }
+
+    track_p = data.TrackP.values
+    sel_p = (track_p >= limits["TrackP"][1]) * (track_p < limits["TrackP"][0])
+
+    track_pt = data.TrackPt.values
+    sel_pt = (track_pt >= limits["TrackPt"][1]) * (track_pt < limits["TrackPt"][0])
+
+
+    for num in range(len(particle_names)):
+
+        sel_class_p = sel_p * (labels[:, num] == 1)
+        sel_class_pt = sel_pt * (labels[:, num] == 1)
+
+        probas[sel_class_p, num], track_p[sel_class_p]
+
+        flatness_p_figure(probas[sel_class_p, num],
+                          track_p[sel_class_p],
+                          track_name,
+                          particle_names[num],
+                          save_path=save_path,
+                          show=show)
+
+        flatness_pt_figure(probas[sel_class_pt, num],
+                          track_pt[sel_class_pt],
+                          track_name,
+                          particle_names[num],
+                          save_path=save_path,
+                          show=show)
