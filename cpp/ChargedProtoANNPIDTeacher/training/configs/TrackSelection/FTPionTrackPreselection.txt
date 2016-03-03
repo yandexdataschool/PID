@@ -1,9 +1,0 @@
-
-TrackChi2PerDof       <   10.0
-TrackLikelihood       > -100.0
-TrackGhostProbability < 0.5
-
-TrackP  >   3000
-TrackP  < 200000
-TrackPt >    500
-TrackPt <  10000
