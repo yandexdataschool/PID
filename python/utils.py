@@ -1,5 +1,6 @@
 import numpy
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+import matplotlib.pyplot as plt
 
 
 def __rolling_window(data, window_size):
@@ -73,3 +74,161 @@ def compute_cvm(predictions, masses, n_neighbours=200, step=50):
     for window in __rolling_window(predictions, window_size=n_neighbours)[::step]:
         cvms.append(__cvm(subindices=window, total_events=len(predictions)))
     return numpy.mean(cvms)
+
+
+def get_roc_curves(labels, probas, curve_labels, save_path=None, show=True):
+    """
+    Creates roc curve for each class vs rest.
+    :param labels: ndarray, shape = [n_samples, n_classes], labels for the each class.
+    1 - if a sample belongs to the class, 0 - otherwise.
+    :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
+    :param curve_labels: array of strings , shape = [n_classes], labels of the curves.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    """
+
+    plt.figure(figsize=(10,7))
+
+    for num in range(probas.shape[1]):
+
+        roc_auc = roc_auc_score(labels[:, num], probas[:, num])
+        fpr, tpr, _ = roc_curve(labels[:, num], probas[:, num])
+
+        plt.plot(tpr, 1.-fpr, label=curve_labels[num] + ', %.2f' % roc_auc, linewidth=2)
+
+    plt.title("ROC Curves", size=15)
+    plt.xlabel("Signal efficiency", size=15)
+    plt.ylabel("Background rejection", size=15)
+    plt.legend(loc='best',prop={'size':15})
+    plt.xticks(numpy.arange(0, 1.01, 0.1), size=15)
+    plt.yticks(numpy.arange(0, 1.01, 0.1), size=15)
+
+
+    if save_path != None:
+        plt.savefig(save_path + "/overall_roc_auc.png")
+
+    if show == True:
+        plt.show()
+
+    plt.clf()
+    plt.close()
+
+def get_roc_auc_matrix(labels, probas, axis_labels, save_path=None, show=True):
+
+    """
+    Calculate class vs class roc aucs matrix.
+    :param labels: ndarray, shape = [n_samples, n_classes], labels for the each class.
+    1 - if a sample belongs to the class, 0 - otherwise.
+    :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
+    :param axis_labels: array of strings , shape = [n_classes], labels of the curves.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    :return: pandas.DataFrame roc_auc_matrix
+    """
+
+    # Calculate roc_auc_matrics
+    roc_auc_matrics = numpy.ones((probas.shape[1],probas.shape[1]))
+
+    for first in range(probas.shape[1]):
+        for second in range(probas.shape[1]):
+
+            if first == second:
+                continue
+
+            weights = ((labels[:, first] != 0) + (labels[:, second] != 0)) * 1.
+
+            roc_auc = roc_auc_score(labels[:, first], probas[:, first]/probas[:, second], sample_weight=weights)
+
+            roc_auc_matrics[first, second] = roc_auc
+
+
+    # Save roc_auc_matrics
+    matrix = pandas.DataFrame(columns=['Class'] + axis_labels)
+    matrix['Class'] = axis_labels
+
+    for num in range(len(axis_labels)):
+
+        matrix[axis_labels[num]] = roc_auc_matrics[num, :]
+
+    if save_path != None:
+        matrix.to_csv(save_path + "/class_vs_class_roc_auc_matrix.csv")
+
+
+    # Plot roc_auc_matrics
+    plt.figure(figsize=(10,7))
+    plt.imshow(roc_auc_matrics, interpolation='nearest')
+    tick_marks = numpy.arange(len(axis_labels))
+    plt.xticks(tick_marks, axis_labels, rotation=45, size=15)
+    plt.yticks(tick_marks, axis_labels, size=15)
+    plt.clim([0.8,1])
+    plt.colorbar()
+    plt.tight_layout()
+    plt.title('Particle vs particle roc aucs', size=15)
+
+    if save_path != None:
+        plt.savefig(save_path + "/overall_roc_auc.png")
+
+    if show == True:
+        plt.show()
+
+    plt.clf()
+    plt.close()
+
+    return matrix
+
+def get_roc_auc_ration_matrix(matrix_one, matrix_two, save_path=None, show=True):
+
+    """
+    Divide matrix_one to matrix_two.
+    :param matrix_one: pandas.DataFrame with column 'Class' which contain class names.
+    :param matrix_two: pandas.DataFrame with column 'Class' which contain class names.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    :return: pandas.DataFrame roc_auc_ratio_matrix
+    """
+
+    # Calculate roc_auc_matrics
+    classes = list(matrix_one.Class.values)
+    roc_auc_matrics = numpy.ones((len(classes), len(classes)))
+
+    for first in range(len(classes)):
+        for second in range(len(classes)):
+
+            roc_auc_one = matrix_one[classes[second]][matrix_one.Class == classes[first]].values[0]
+            roc_auc_two = matrix_two[classes[second]][matrix_two.Class == classes[first]].values[0]
+
+            roc_auc_matrics[first, second] = roc_auc_one / roc_auc_two
+
+    # Save roc_auc_matrics
+    matrix = pandas.DataFrame(columns=['Class'] + classes)
+    matrix['Class'] = classes
+
+    for num in range(len(classes)):
+
+        matrix[classes[num]] = roc_auc_matrics[num, :]
+
+    if save_path != None:
+        matrix.to_csv(save_path + "/class_vs_class_roc_auc_matrix.csv")
+
+    # Plot roc_auc_matrics
+    from matplotlib import cm
+    plt.figure(figsize=(10,7))
+    plt.imshow(roc_auc_matrics, interpolation='nearest', cmap=cm.seismic)
+    tick_marks = numpy.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45, size=15)
+    plt.yticks(tick_marks, classes, size=15)
+    plt.clim([0.9,1.1])
+    plt.colorbar()
+    plt.tight_layout()
+    plt.title('Particle vs particle roc aucs ratio', size=15)
+
+    if save_path != None:
+        plt.savefig(save_path + "/overall_roc_auc.png")
+
+    if show == True:
+        plt.show()
+
+    plt.clf()
+    plt.close()
+
+    return matrix
