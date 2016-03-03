@@ -1,9 +1,0 @@
-all
-Ghosts
-Ghosts
-AllTracksInEvent
-AllTracksInEvent
-NaturalMix
-NoReweight
-10000
-100000

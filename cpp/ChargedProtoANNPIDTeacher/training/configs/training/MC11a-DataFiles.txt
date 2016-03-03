@@ -1,3 +1,0 @@
-/castor/cern.ch/user/j/jonrob/ProtoParticlePIDtuples/MC11a-Binc-nu2/ProtoPIDANN.tuples.1.root
-
-/castor/cern.ch/user/j/jonrob/ProtoParticlePIDtuples/MC11a-Binc-nu2/ProtoPIDANN.tuples.2.root
