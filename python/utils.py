@@ -1,4 +1,5 @@
 import numpy
+import pandas
 from sklearn.metrics import roc_curve, auc, roc_auc_score
 import matplotlib.pyplot as plt
 
@@ -232,3 +233,118 @@ def get_roc_auc_ration_matrix(matrix_one, matrix_two, save_path=None, show=True)
     plt.close()
 
     return matrix
+
+def get_flatness_threshold(n_simulations, q, track):
+
+    """
+    Compute percentile of CvM test for flatness
+    :param n_simulations: int number of simulations
+    :param q: percentile
+    :param track: array, variable along which the CvM test computes
+    :return: float
+    """
+
+    cvm_pdf = []
+
+    for step in range(n_simulations):
+
+        proba_rand = numpy.random.random(len(track))
+        cvm_pdf.append(compute_cvm(proba_rand, track))
+
+    cvm_pdf = numpy.array(cvm_pdf)
+    threshold = numpy.percentile(cvm_pdf, q)
+
+    return threshold
+
+def get_flatness_table(data, labels, probas, class_names, save_path=None):
+
+    """
+    Compute CvM tests for TrackP and TrackPt for each classes.
+    :param data: pandas.DataFrame, data
+    :param labels: ndarray, shape = [n_samples, n_classes], labels for the each class.
+    1 - if a sample belongs to the class, 0 - otherwise.
+    :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
+    :param axis_labels: array of strings , shape = [n_classes], labels of the curves.
+    :param class_names: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :return: flatness pandas.DataFrame
+    """
+
+    GeV = 1000
+    limits = {"TrackP": [100*GeV, 0],
+              "TrackPt": [10*GeV, 0] }
+
+    track_p = data.TrackP.values
+    sel_p = (track_p >= limits["TrackP"][1]) * (track_p < limits["TrackP"][0])
+
+    track_pt = data.TrackPt.values
+    sel_pt = (track_pt >= limits["TrackPt"][1]) * (track_pt < limits["TrackPt"][0])
+
+
+
+    cvm_track_p = []
+    cvm_track_pt = []
+
+    threshold_track_p = []
+    threshold_track_pt = []
+
+    for num in range(probas.shape[1]):
+
+        sel_class_p = sel_p * (labels[:, num] == 1)
+        sel_class_pt = sel_pt * (labels[:, num] == 1)
+
+        cvm_p = compute_cvm(probas[sel_class_p, num], track_p[sel_class_p])
+        cvm_track_p.append(cvm_p)
+
+        threshold_p = get_flatness_threshold(100, 95, track_p[sel_class_p])
+        threshold_track_p.append(threshold_p)
+
+
+        cvm_pt = compute_cvm(probas[sel_class_pt, num], track_pt[sel_class_pt])
+        cvm_track_pt.append(cvm_pt)
+
+        threshold_pt = get_flatness_threshold(100, 95, track_pt[sel_class_pt])
+        threshold_track_pt.append(threshold_pt)
+
+    flatness = pandas.DataFrame(columns=['Class', 'TrackP', 'TrackPt'])
+    flatness['Class'] = class_names
+    flatness['TrackP'] = cvm_track_p
+    flatness['TrackPt'] = cvm_track_pt
+    flatness['P_Conf_level'] = threshold_track_p
+    flatness['Pt_Conf_level'] = threshold_track_pt
+
+    if save_path != None:
+        flatness.to_csv(save_path + "/flatness.csv")
+
+    return flatness
+
+def get_flatness_ratio(flatness_one, flatness_two, save_path=None):
+
+    """
+    Get ratio of flatness_one and flatness_two
+    :param flatness_one: pandas.DataFrame with column 'Class' which contain class names.
+    :param flatness_two: pandas.DataFrame with column 'Class' which contain class names.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :return: pandas.DataFrame
+    """
+
+    classes = flatness_one.Class.values
+
+    flatness_arr = numpy.zeros((len(classes), 2))
+
+    for num in range(len(classes)):
+
+        flat_one = flatness_one[flatness_one.Class == classes[num]][[u'TrackP', u'TrackPt']].values
+        flat_two = flatness_two[flatness_two.Class == classes[num]][[u'TrackP', u'TrackPt']].values
+
+        flatness_arr[num, :] = flat_one / flat_two
+
+
+    flatness = pandas.DataFrame(columns=['Class', 'TrackP', 'TrackPt'])
+    flatness['Class'] = classes
+    flatness['TrackP'] = flatness_arr[:, 0]
+    flatness['TrackPt'] = flatness_arr[:, 1]
+
+    if save_path != None:
+        flatness.to_csv(save_path + "/rel_flatness.csv")
+
+    return flatness
