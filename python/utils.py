@@ -77,16 +77,36 @@ def compute_cvm(predictions, masses, n_neighbours=200, step=50):
     return numpy.mean(cvms)
 
 
+
+def labels_transform(labels):
+
+    """
+    Transform labels from shape = [n_samples] to shape = [n_samples, n_classes]
+    :param labels: array
+    :return: ndarray, transformed labels
+    """
+
+    classes = numpy.unique(labels)
+
+    new_labels = numpy.zeros((len(labels), len(classes)))
+    for cl in classes:
+        new_labels[:, cl] = (labels == cl) * 1.
+
+    return new_labels
+
+
 def get_roc_curves(labels, probas, curve_labels, save_path=None, show=True):
     """
     Creates roc curve for each class vs rest.
-    :param labels: ndarray, shape = [n_samples, n_classes], labels for the each class.
+    :param labels: array, shape = [n_samples], labels for the each class.
     1 - if a sample belongs to the class, 0 - otherwise.
     :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
     :param curve_labels: array of strings , shape = [n_classes], labels of the curves.
     :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
     :param show: boolean, if true the figure will be displayed.
     """
+
+    labels = labels_transform(labels)
 
     plt.figure(figsize=(10,7))
 
@@ -118,7 +138,7 @@ def get_roc_auc_matrix(labels, probas, axis_labels, save_path=None, show=True):
 
     """
     Calculate class vs class roc aucs matrix.
-    :param labels: ndarray, shape = [n_samples, n_classes], labels for the each class.
+    :param labels: array, shape = [n_samples], labels for the each class.
     1 - if a sample belongs to the class, 0 - otherwise.
     :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
     :param axis_labels: array of strings , shape = [n_classes], labels of the curves.
@@ -126,6 +146,8 @@ def get_roc_auc_matrix(labels, probas, axis_labels, save_path=None, show=True):
     :param show: boolean, if true the figure will be displayed.
     :return: pandas.DataFrame roc_auc_matrix
     """
+
+    labels = labels_transform(labels)
 
     # Calculate roc_auc_matrics
     roc_auc_matrics = numpy.ones((probas.shape[1],probas.shape[1]))
@@ -261,13 +283,15 @@ def get_flatness_table(data, labels, probas, class_names, save_path=None):
     """
     Compute CvM tests for TrackP and TrackPt for each classes.
     :param data: pandas.DataFrame, data
-    :param labels: ndarray, shape = [n_samples, n_classes], labels for the each class.
+    :param labels: array, shape = [n_samples], labels for the each class.
     1 - if a sample belongs to the class, 0 - otherwise.
     :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
     :param axis_labels: array of strings , shape = [n_classes], labels of the curves.
     :param class_names: string, path to a directory where the figure will saved. If None the figure will not be saved.
     :return: flatness pandas.DataFrame
     """
+
+    labels = labels_transform(labels)
 
     GeV = 1000
     limits = {"TrackP": [100*GeV, 0],
@@ -448,12 +472,15 @@ def get_all_flatness_figures(data, probas, labels, track_name, particle_names, s
     Plot signal efficiency vs TrackP figure.
     :param data: pandas.dataFrame() data.
     :param probas: bdarray, shape = [n_samples, n_classes], predicted probabilities.
+    :param labels: array, shape = [n_samples], class labels
     :param track_p: array, shape = [n_samples], TrackP values.
     :param track_name: string, name.
     :param particle_names: list of strings, particle names.
     :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
     :param show: boolean, if true the figure will be displayed.
     """
+
+    labels = labels_transform(labels)
 
     GeV = 1000
     limits = {"TrackP": [100*GeV, 0],
