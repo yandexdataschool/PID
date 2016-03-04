@@ -2,6 +2,10 @@ import numpy
 import pandas
 from sklearn.metrics import roc_curve, auc, roc_auc_score
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib import cm
+from rep.utils import get_efficiencies
+from rep.plotting import ErrorPlot
 
 
 def __rolling_window(data, window_size):
@@ -98,8 +102,7 @@ def labels_transform(labels):
 def get_roc_curves(labels, probas, curve_labels, save_path=None, show=True):
     """
     Creates roc curve for each class vs rest.
-    :param labels: array, shape = [n_samples], labels for the each class.
-    1 - if a sample belongs to the class, 0 - otherwise.
+    :param labels: array, shape = [n_samples], labels for the each class 0, 1, ..., n_classes - 1.
     :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
     :param curve_labels: array of strings , shape = [n_classes], labels of the curves.
     :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
@@ -115,7 +118,7 @@ def get_roc_curves(labels, probas, curve_labels, save_path=None, show=True):
         roc_auc = roc_auc_score(labels[:, num], probas[:, num])
         fpr, tpr, _ = roc_curve(labels[:, num], probas[:, num])
 
-        plt.plot(tpr, 1.-fpr, label=curve_labels[num] + ', %.2f' % roc_auc, linewidth=2)
+        plt.plot(tpr, 1.-fpr, label=curve_labels[num] + ', %.4f' % roc_auc, linewidth=2)
 
     plt.title("ROC Curves", size=15)
     plt.xlabel("Signal efficiency", size=15)
@@ -138,8 +141,7 @@ def get_roc_auc_matrix(labels, probas, axis_labels, save_path=None, show=True):
 
     """
     Calculate class vs class roc aucs matrix.
-    :param labels: array, shape = [n_samples], labels for the each class.
-    1 - if a sample belongs to the class, 0 - otherwise.
+    :param labels: array, shape = [n_samples], labels for the each class 0, 1, ..., n_classes - 1.
     :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
     :param axis_labels: array of strings , shape = [n_classes], labels of the curves.
     :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
@@ -149,8 +151,8 @@ def get_roc_auc_matrix(labels, probas, axis_labels, save_path=None, show=True):
 
     labels = labels_transform(labels)
 
-    # Calculate roc_auc_matrics
-    roc_auc_matrics = numpy.ones((probas.shape[1],probas.shape[1]))
+    # Calculate roc_auc_matrices
+    roc_auc_matrices = numpy.ones((probas.shape[1],probas.shape[1]))
 
     for first in range(probas.shape[1]):
         for second in range(probas.shape[1]):
@@ -162,31 +164,30 @@ def get_roc_auc_matrix(labels, probas, axis_labels, save_path=None, show=True):
 
             roc_auc = roc_auc_score(labels[:, first], probas[:, first]/probas[:, second], sample_weight=weights)
 
-            roc_auc_matrics[first, second] = roc_auc
+            roc_auc_matrices[first, second] = roc_auc
 
 
-    # Save roc_auc_matrics
-    matrix = pandas.DataFrame(columns=['Class'] + axis_labels)
-    matrix['Class'] = axis_labels
+    # Save roc_auc_matrices
+    matrix = pandas.DataFrame(columns=axis_labels, index=axis_labels)
 
     for num in range(len(axis_labels)):
 
-        matrix[axis_labels[num]] = roc_auc_matrics[num, :]
+        matrix[axis_labels[num]] = roc_auc_matrices[num, :]
 
     if save_path != None:
         matrix.to_csv(save_path + "/class_vs_class_roc_auc_matrix.csv")
 
 
-    # Plot roc_auc_matrics
+    # Plot roc_auc_matrices
+    inline_rc = dict(mpl.rcParams)
+    import seaborn as sns
     plt.figure(figsize=(10,7))
-    plt.imshow(roc_auc_matrics, interpolation='nearest')
-    tick_marks = numpy.arange(len(axis_labels))
-    plt.xticks(tick_marks, axis_labels, rotation=45, size=15)
-    plt.yticks(tick_marks, axis_labels, size=15)
-    plt.clim([0.8,1])
-    plt.colorbar()
-    plt.tight_layout()
+    sns.set()
+    ax = plt.axes()
+    sns.heatmap(matrix, vmin=0.8, vmax=1., annot=True, fmt='.4f', ax=ax, cmap=cm.coolwarm)
     plt.title('Particle vs particle roc aucs', size=15)
+    plt.xticks(size=15)
+    plt.yticks(size=15)
 
     if save_path != None:
         plt.savefig(save_path + "/overall_roc_auc.png")
@@ -197,9 +198,12 @@ def get_roc_auc_matrix(labels, probas, axis_labels, save_path=None, show=True):
     plt.clf()
     plt.close()
 
+    mpl.rcParams.update(mpl.rcParamsDefault)
+    mpl.rcParams.update(inline_rc)
+
     return matrix
 
-def get_roc_auc_ration_matrix(matrix_one, matrix_two, save_path=None, show=True):
+def get_roc_auc_ratio_matrix(matrix_one, matrix_two, save_path=None, show=True):
 
     """
     Divide matrix_one to matrix_two.
@@ -210,49 +214,50 @@ def get_roc_auc_ration_matrix(matrix_one, matrix_two, save_path=None, show=True)
     :return: pandas.DataFrame roc_auc_ratio_matrix
     """
 
-    # Calculate roc_auc_matrics
-    classes = list(matrix_one.Class.values)
-    roc_auc_matrics = numpy.ones((len(classes), len(classes)))
+    # Calculate roc_auc_matrices
+    classes = list(matrix_one.index)
+    roc_auc_matrices = numpy.ones((len(classes), len(classes)))
 
     for first in range(len(classes)):
         for second in range(len(classes)):
 
-            roc_auc_one = matrix_one[classes[second]][matrix_one.Class == classes[first]].values[0]
-            roc_auc_two = matrix_two[classes[second]][matrix_two.Class == classes[first]].values[0]
+            roc_auc_one = matrix_one.loc[classes[first], classes[second]]
+            roc_auc_two = matrix_two.loc[classes[first], classes[second]]
+            roc_auc_matrices[first, second] = roc_auc_one / roc_auc_two
 
-            roc_auc_matrics[first, second] = roc_auc_one / roc_auc_two
-
-    # Save roc_auc_matrics
-    matrix = pandas.DataFrame(columns=['Class'] + classes)
-    matrix['Class'] = classes
+    # Save roc_auc_matrices
+    matrix = pandas.DataFrame(columns=classes, index=classes)
 
     for num in range(len(classes)):
 
-        matrix[classes[num]] = roc_auc_matrics[num, :]
+        matrix[classes[num]] = roc_auc_matrices[num, :]
 
     if save_path != None:
-        matrix.to_csv(save_path + "/class_vs_class_roc_auc_matrix.csv")
+        matrix.to_csv(save_path + "/class_vs_class_roc_auc_ratio_matrix.csv")
 
-    # Plot roc_auc_matrics
+    # Plot roc_auc_matrices
     from matplotlib import cm
+    inline_rc = dict(mpl.rcParams)
+    import seaborn as sns
     plt.figure(figsize=(10,7))
-    plt.imshow(roc_auc_matrics, interpolation='nearest', cmap=cm.seismic)
-    tick_marks = numpy.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45, size=15)
-    plt.yticks(tick_marks, classes, size=15)
-    plt.clim([0.9,1.1])
-    plt.colorbar()
-    plt.tight_layout()
+    sns.set()
+    ax = plt.axes()
+    sns.heatmap(matrix, vmin=0.9, vmax=1.1, annot=True, fmt='.4f', ax=ax, cmap=cm.seismic)
+    plt.xticks(size=15)
+    plt.yticks(size=15)
     plt.title('Particle vs particle roc aucs ratio', size=15)
 
     if save_path != None:
-        plt.savefig(save_path + "/overall_roc_auc.png")
+        plt.savefig(save_path + "/overall_roc_auc_ratio.png")
 
     if show == True:
         plt.show()
 
     plt.clf()
     plt.close()
+
+    mpl.rcParams.update(mpl.rcParamsDefault)
+    mpl.rcParams.update(inline_rc)
 
     return matrix
 
@@ -283,8 +288,7 @@ def get_flatness_table(data, labels, probas, class_names, save_path=None):
     """
     Compute CvM tests for TrackP and TrackPt for each classes.
     :param data: pandas.DataFrame, data
-    :param labels: array, shape = [n_samples], labels for the each class.
-    1 - if a sample belongs to the class, 0 - otherwise.
+    :param labels: array, shape = [n_samples], labels for the each class 0, 1, ..., n_classes - 1.
     :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
     :param axis_labels: array of strings , shape = [n_classes], labels of the curves.
     :param class_names: string, path to a directory where the figure will saved. If None the figure will not be saved.
@@ -329,8 +333,7 @@ def get_flatness_table(data, labels, probas, class_names, save_path=None):
         threshold_pt = get_flatness_threshold(100, 95, track_pt[sel_class_pt])
         threshold_track_pt.append(threshold_pt)
 
-    flatness = pandas.DataFrame(columns=['Class', 'TrackP', 'TrackPt'])
-    flatness['Class'] = class_names
+    flatness = pandas.DataFrame(columns=['TrackP', 'TrackPt', 'P_Conf_level', 'Pt_Conf_level'], index=class_names)
     flatness['TrackP'] = cvm_track_p
     flatness['TrackPt'] = cvm_track_pt
     flatness['P_Conf_level'] = threshold_track_p
@@ -351,20 +354,19 @@ def get_flatness_ratio(flatness_one, flatness_two, save_path=None):
     :return: pandas.DataFrame
     """
 
-    classes = flatness_one.Class.values
+    classes = flatness_one.index
 
     flatness_arr = numpy.zeros((len(classes), 2))
 
     for num in range(len(classes)):
 
-        flat_one = flatness_one[flatness_one.Class == classes[num]][[u'TrackP', u'TrackPt']].values
-        flat_two = flatness_two[flatness_two.Class == classes[num]][[u'TrackP', u'TrackPt']].values
+        flat_one = flatness_one.loc[classes[num]][[u'TrackP', u'TrackPt']].values[0]
+        flat_two = flatness_two.loc[classes[num]][[u'TrackP', u'TrackPt']].values[0]
 
         flatness_arr[num, :] = flat_one / flat_two
 
 
-    flatness = pandas.DataFrame(columns=['Class', 'TrackP', 'TrackPt'])
-    flatness['Class'] = classes
+    flatness = pandas.DataFrame(columns=['TrackP', 'TrackPt'], index=classes)
     flatness['TrackP'] = flatness_arr[:, 0]
     flatness['TrackPt'] = flatness_arr[:, 1]
 
@@ -372,9 +374,6 @@ def get_flatness_ratio(flatness_one, flatness_two, save_path=None):
         flatness.to_csv(save_path + "/rel_flatness.csv")
 
     return flatness
-
-from rep.utils import get_efficiencies
-from rep.plotting import ErrorPlot
 
 def flatness_p_figure(proba, track_p, track_name, particle_name, save_path=None, show=False):
 
@@ -472,7 +471,7 @@ def get_all_flatness_figures(data, probas, labels, track_name, particle_names, s
     Plot signal efficiency vs TrackP figure.
     :param data: pandas.dataFrame() data.
     :param probas: bdarray, shape = [n_samples, n_classes], predicted probabilities.
-    :param labels: array, shape = [n_samples], class labels
+    :param labels: array, shape = [n_samples], class labels 0, 1, ..., n_classes - 1.
     :param track_p: array, shape = [n_samples], TrackP values.
     :param track_name: string, name.
     :param particle_names: list of strings, particle names.
