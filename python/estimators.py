@@ -21,7 +21,8 @@ class OneVsRestClassifier(object):
         Fit the classifier.
         :param X: the estimator's format, data
         :param y: array, shape = [n_samples], labels of classes [0, 1, 2, ..., n_classes - 1]
-        :param sample_weight: array, shape = [n_samples], sample weights
+        :param sample_weight: None, 'balanced' or array, shape = [n_samples], sample weights.
+        If 'balanced' sum of weights of positive and negative classes will be equal.
         :return:
         """
 
@@ -34,9 +35,20 @@ class OneVsRestClassifier(object):
             estimator = copy.copy(self.estimator)
 
             if sample_weight is not None:
+
                 estimator.fit(X, y_class, sample_weight)
+
+            elif sample_weight == 'balanced':
+
+                weights = (y == one_class) * len(y) / ((y == one_class).sum()) + \
+                          (y != one_class) * len(y) / ((y != one_class).sum())
+
+                estimator.fit(X, y_class, sample_weight = weights)
+
             else:
+
                 estimator.fit(X, y_class)
+
             self.estimators_[one_class] = estimator
 
     def predict_proba(self, X):
