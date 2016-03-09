@@ -4,7 +4,7 @@ import os
 import numpy
 import pandas
 import root_numpy
-from rep.estimators import TMVAClassifier
+
 
 all_pid_type = 999999
 particle_pdg_codes = {"all": all_pid_type,
@@ -104,7 +104,7 @@ def create_ghost_accept_sel(ghost_accept_frac):
 
 
 # Main code!
-def get_train_data(params, location='http'):
+def get_train_data(params, location='http', file_name = 'data_train2.csv'):
 
     ###################################################
     # Check train directory
@@ -113,7 +113,7 @@ def get_train_data(params, location='http'):
     # Results directory
     WORKPATH = params['TRAINDIR']
     # LOG file
-    LOGFILE = WORKPATH + "/" + params['TRACK'] + "-" + params['PARTICLE'] + ".log"
+    LOGFILE = WORKPATH + "/" + params['TRACK'] + ".log"
     # viewed_files file
     VIEWEDFILES = WORKPATH + "/viewed_files.txt"
 
@@ -295,23 +295,18 @@ def get_train_data(params, location='http'):
 
     # Data Frames for trainer
     try:
-        data_train_signal = pandas.read_csv(WORKPATH + '/data_train_signal.csv', usecols=['MCParticleType'])
-        data_train_bkg = pandas.read_csv(WORKPATH + '/data_train_bkg.csv', usecols=['MCParticleType'])
+        data_train = pandas.read_csv(WORKPATH + '/' + file_name, usecols=['MCParticleType'])
 
-        selected_tracks = len(data_train_signal) + len(data_train_bkg)
-        signal_tracks = len(data_train_signal)
-        background_tracks = len(data_train_bkg)
+        selected_tracks = len(data_train)
 
         for pdg in selected_tracks_by_type.keys():
-            selected_tracks_by_type[pdg] = len(data_train_signal[numpy.abs(data_train_signal.MCParticleType) == pdg]) + \
-                                           len(data_train_bkg[numpy.abs(data_train_bkg.MCParticleType) == pdg])
+            selected_tracks_by_type[pdg] = len(data_train[numpy.abs(data_train.MCParticleType) == pdg])
 
-        data_train_signal = pandas.DataFrame()
-        data_train_bkg = pandas.DataFrame()
+        data_train = pandas.DataFrame()
 
     except:
-        data_train_signal = pandas.DataFrame()
-        data_train_bkg = pandas.DataFrame()
+
+        data_train = pandas.DataFrame()
 
 
     # Loop over training file list as far as required
@@ -371,8 +366,7 @@ def get_train_data(params, location='http'):
         # Count selected tracks for this file
         selected_tracks_file = 0
 
-        rows_train_signal = []
-        rows_train_bkg = []
+        rows_train = []
 
         # Loop over entry list
         for irow in range(0, len(training_tree)):
@@ -400,25 +394,8 @@ def get_train_data(params, location='http'):
             if not ( target or all_pid_type == bkg_pdg or mc_particle_type == int(bkg_pdg) ):
                 continue
 
-            # Count signal and background
-            if target:
-                signal_tracks += 1
-            else:
-                background_tracks += 1
 
-            # Fill an input array for the teacher ?????
-
-            # Make sure min and max are filled for spectators ?????
-
-            # Set inputs and target output
-
-            if target:
-                rows_train_signal.append(irow)
-                # data_train_signal = pandas.concat([data_train_signal, data_row], ignore_index=True) # data_row[features]
-
-            else:
-                rows_train_bkg.append(irow)
-                # data_train_bkg = pandas.concat([data_train_bkg, data_row], ignore_index=True) # data_row[features]
+            rows_train.append(irow)
 
 
             # count tracks
@@ -432,8 +409,7 @@ def get_train_data(params, location='http'):
             if selected_tracks >= int(n_training_tracks):
                 break
 
-        data_train_signal = training_tree.irow(rows_train_signal)
-        data_train_bkg = training_tree.irow(rows_train_bkg)
+        data_train = training_tree.irow(rows_train)
 
         VIEWED.append(data_file_path)
         numpy.array(VIEWED).tofile(VIEWEDFILES, sep="\n")
@@ -441,19 +417,12 @@ def get_train_data(params, location='http'):
         LOG.flush()
 
         if os.path.exists(WORKPATH + '/data_train_signal.csv'):
-            data_train_signal.to_csv(WORKPATH + '/data_train_signal.csv', mode='a', header=False)
+            data_train.to_csv(WORKPATH + '/' + file_name, mode='a', header=False)
         else:
-            data_train_signal.to_csv(WORKPATH + '/data_train_signal.csv', mode='a', header=True)
-
-        if os.path.exists(WORKPATH + '/data_train_bkg.csv'):
-            data_train_bkg.to_csv(WORKPATH + '/data_train_bkg.csv', mode='a', header=False)
-        else:
-            data_train_bkg.to_csv(WORKPATH + '/data_train_bkg.csv', mode='a', header=True)
+            data_train.to_csv(WORKPATH + '/' + file_name, mode='a', header=True)
 
         LOG.write("n_training_tracks = " + str(n_training_tracks) + "\n")
         LOG.write("selected_tracks = " + str(selected_tracks) + "\n")
-        LOG.write("signal_tracks = " + str(signal_tracks) + "\n")
-        LOG.write("background_tracks = " + str(background_tracks) + "\n")
         LOG.write("selected_tracks_file = " + str(selected_tracks_file) + "\n")
         LOG.write("selected_tracks_by_type = " + str(selected_tracks_by_type) + "\n")
         LOG.write("n_per_type = " + str(n_per_type) + "\n")
