@@ -112,7 +112,7 @@ def get_eval_data(params, location='http'):
     # Results directory
     WORKPATH = params['TRAINDIR']
     # LOG file
-    LOGFILE = WORKPATH + "/" + params['TRACK'] + "-" + params['PARTICLE'] + "-eval.log"
+    LOGFILE = WORKPATH + "/" + params['TRACK'] + "-eval.log"
     # viewed_files file
     VIEWEDFILES = WORKPATH + "/viewed_files.txt"
 
@@ -237,7 +237,7 @@ def get_eval_data(params, location='http'):
     n_training_tracks = train_config[7]
 
     # Number of eval tracks
-    n_eval_tracks = int(train_config[8])//10 # !!!!!!!!!!!!!!!!!
+    n_eval_tracks = int(train_config[8])
 
     # NUmber of features
     n_var = len(features)
