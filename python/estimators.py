@@ -34,9 +34,9 @@ class OneVsRestClassifier(object):
 
             estimator = copy.copy(self.estimator)
 
-            if sample_weight is not None:
+            if sample_weight is None:
 
-                estimator.fit(X, y_class, sample_weight)
+                estimator.fit(X, y_class)
 
             elif sample_weight == 'balanced':
 
@@ -47,7 +47,7 @@ class OneVsRestClassifier(object):
 
             else:
 
-                estimator.fit(X, y_class)
+                estimator.fit(X, y_class, sample_weight)
 
             self.estimators_[one_class] = estimator
 
