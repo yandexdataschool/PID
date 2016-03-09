@@ -190,7 +190,7 @@ def get_roc_auc_matrix(labels, probas, axis_labels, save_path=None, show=True):
     plt.yticks(size=15)
 
     if save_path != None:
-        plt.savefig(save_path + "/overall_roc_auc.png")
+        plt.savefig(save_path + "/class_vs_class_roc_auc_matrix.png")
 
     if show == True:
         plt.show()
@@ -233,7 +233,7 @@ def get_roc_auc_ratio_matrix(matrix_one, matrix_two, save_path=None, show=True):
         matrix[classes[num]] = roc_auc_matrices[num, :]
 
     if save_path != None:
-        matrix.to_csv(save_path + "/class_vs_class_roc_auc_ratio_matrix.csv")
+        matrix.to_csv(save_path + "/class_vs_class_roc_auc_rel_matrix.csv")
 
     # Plot roc_auc_matrices
     from matplotlib import cm
@@ -248,7 +248,7 @@ def get_roc_auc_ratio_matrix(matrix_one, matrix_two, save_path=None, show=True):
     plt.title('Particle vs particle roc aucs ratio', size=15)
 
     if save_path != None:
-        plt.savefig(save_path + "/overall_roc_auc_ratio.png")
+        plt.savefig(save_path + "/class_vs_class_roc_auc_rel_matrix.png")
 
     if show == True:
         plt.show()
@@ -360,8 +360,8 @@ def get_flatness_ratio(flatness_one, flatness_two, save_path=None):
 
     for num in range(len(classes)):
 
-        flat_one = flatness_one.loc[classes[num]][[u'TrackP', u'TrackPt']].values[0]
-        flat_two = flatness_two.loc[classes[num]][[u'TrackP', u'TrackPt']].values[0]
+        flat_one = flatness_one.loc[classes[num]][[u'TrackP', u'TrackPt']].values
+        flat_two = flatness_two.loc[classes[num]][[u'TrackP', u'TrackPt']].values
 
         flatness_arr[num, :] = flat_one / flat_two
 
@@ -512,3 +512,50 @@ def get_all_flatness_figures(data, probas, labels, track_name, particle_names, s
                           particle_names[num],
                           save_path=save_path,
                           show=show)
+
+
+
+def get_one_vs_one_roc_curves(labels, probas, curve_labels, save_path=None, show=True):
+    """
+    Creates one vs one roc curves.
+    :param labels: array, shape = [n_samples], labels for the each class 0, 1, ..., n_classes - 1.
+    :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
+    :param curve_labels: array of strings , shape = [n_classes], labels of the curves.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    """
+
+    classes = numpy.unique(labels)
+
+    for one_class, one_name in zip(classes, curve_labels):
+
+        plt.figure(figsize=(10,7))
+
+        for two_class, two_name in zip(classes, curve_labels):
+
+            if one_class == two_class:
+                continue
+
+            weights = (labels == one_class) * 1. + (labels == two_class) * 1.
+            one_labels = (labels == one_class) * 1.
+            roc_auc = roc_auc_score(one_labels, probas[:, one_class] / probas[:, two_class], sample_weight=weights)
+            fpr, tpr, _ = roc_curve(one_labels, probas[:, one_class] / probas[:, two_class], sample_weight=weights)
+
+            plt.plot(tpr, 1.-fpr, label=one_name + ' vs ' + two_name + ', %.4f' % roc_auc, linewidth=2)
+
+        plt.title("ROC Curves", size=15)
+        plt.xlabel("Signal efficiency", size=15)
+        plt.ylabel("Background rejection", size=15)
+        plt.legend(loc='best',prop={'size':15})
+        plt.xticks(numpy.arange(0, 1.01, 0.1), size=15)
+        plt.yticks(numpy.arange(0, 1.01, 0.1), size=15)
+
+
+        if save_path != None:
+            plt.savefig(save_path + "/" + one_name + "_vs_one_roc_auc.png")
+
+        if show == True:
+            plt.show()
+
+        plt.clf()
+        plt.close()
