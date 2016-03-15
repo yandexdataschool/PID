@@ -24,4 +24,4 @@ These files are all at Cambridge only I am afraid, so you will need to make some
 http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/ProtoParticlePIDtuples/
 
 ###Feature description
-https://docs.google.com/document/d/1Bn24ZELWZeGuuxyWSKyuGqBRNHFI82_isCLhhv2llvg/edit#heading=h.590zzpg0470g
+https://docs.google.com/document/d/1tGfWUO80hJEfjPZ-jmo43cRqVehUA_3ctTykRmXjajU/edit
