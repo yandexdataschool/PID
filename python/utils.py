@@ -111,12 +111,24 @@ def get_roc_curves(labels, probas, curve_labels, save_path=None, show=True):
 
     labels = labels_transform(labels)
 
+
+
+    weights = numpy.zeros(len(labels))
+
+    for num in range(labels.shape[1]):
+
+        weights += 0.1 * (labels[:, num] == 1) * len(labels) / ((labels[:, num] == 1).sum())
+
+
+
+
+
     plt.figure(figsize=(10,7))
 
     for num in range(probas.shape[1]):
 
-        roc_auc = roc_auc_score(labels[:, num], probas[:, num])
-        fpr, tpr, _ = roc_curve(labels[:, num], probas[:, num])
+        roc_auc = roc_auc_score(labels[:, num], probas[:, num], sample_weight=weights)
+        fpr, tpr, _ = roc_curve(labels[:, num], probas[:, num], sample_weight=weights)
 
         plt.plot(tpr, 1.-fpr, label=curve_labels[num] + ', %.4f' % roc_auc, linewidth=2)
 
