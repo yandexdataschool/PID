@@ -25,3 +25,6 @@ http://www.hep.phy.cam.ac.uk/~jonesc/lhcb/PID/ProtoParticlePIDtuples/
 
 ###Feature description
 https://docs.google.com/document/d/1tGfWUO80hJEfjPZ-jmo43cRqVehUA_3ctTykRmXjajU/edit
+
+###Some LHCb discussion
+https://www.dropbox.com/s/kdpppuayba9ltz3/01003009791.pdf?dl=0
