@@ -387,11 +387,14 @@ def get_flatness_ratio(flatness_one, flatness_two, save_path=None):
 
     return flatness
 
-def flatness_p_figure(proba, track_p, track_name, particle_name, save_path=None, show=False):
+from collections import OrderedDict
+
+def flatness_p_figure(proba, proba_baseline, track_p, track_name, particle_name, save_path=None, show=False):
 
     """
     Plot signal efficiency vs TrackP figure.
     :param proba: array, shape = [n_samples], predicted probabilities.
+    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
     :param track_p: array, shape = [n_samples], TrackP values.
     :param track_name: string, name.
     :param particle_name: string, name.
@@ -399,7 +402,8 @@ def flatness_p_figure(proba, track_p, track_name, particle_name, save_path=None,
     :param show: boolean, if true the figure will be displayed.
     """
 
-    thresholds = numpy.percentile(proba, 100 - numpy.array([5, 20, 40, 60, 80]))
+    thresholds = numpy.percentile(proba, 100 - numpy.array([10, 20, 80]))
+    thresholds_baseline = numpy.percentile(proba_baseline, 100 - numpy.array([20, 50, 80]))
 
     eff = get_efficiencies(proba,
                            track_p,
@@ -408,14 +412,41 @@ def flatness_p_figure(proba, track_p, track_name, particle_name, save_path=None,
                            ignored_sideband=0,
                            thresholds=thresholds)
 
+    eff_baseline = get_efficiencies(proba_baseline,
+                                    track_p,
+                                    bins_number=30,
+                                    errors=True,
+                                    ignored_sideband=0,
+                                    thresholds=thresholds_baseline)
+
     for i in thresholds:
         eff[i] = (eff[i][0], 100. * eff[i][1], 100. * eff[i][2], eff[i][3])
 
-    plot_fig = ErrorPlot(eff)
+    for i in thresholds_baseline:
+        eff_baseline[i] = (eff_baseline[i][0], 100. * eff_baseline[i][1], 100. * eff_baseline[i][2], eff_baseline[i][3])
+
+
+    eff_total = OrderedDict()
+    num = len(eff) + len(eff_baseline)
+
+    for i in range(len(eff)):
+
+        v = eff[eff.keys()[i]]
+        v_baseline = eff_baseline[eff_baseline.keys()[i]]
+
+        eff_total[num] = v
+        eff_total[num - 1] = v_baseline
+        num += -2
+
+
+    plot_fig = ErrorPlot(eff_total)
     plot_fig.ylim = (0, 100)
 
     plot_fig.plot(new_plot=True, figsize=(10,7))
-    plt.legend(['Eff = 5 %', 'Eff = 20 %', 'Eff = 40 %', 'Eff = 60 %', 'Eff = 80 %'], loc='best',prop={'size':15})
+    labels = ['Eff model = 20 %', 'Eff baseline = 20 %',
+              'Eff model = 50 %', 'Eff baseline = 50 %',
+              'Eff model = 80 %', 'Eff baseline = 80 %']
+    plt.legend(labels, loc='best',prop={'size':12}, framealpha=0.5, ncol=1)
     plt.xlabel(track_name + ' ' + particle_name + ' Momentum / MeV/c', size=15)
     plt.xticks(size=15)
     plt.ylabel('Efficiency / %', size=15)
@@ -432,11 +463,12 @@ def flatness_p_figure(proba, track_p, track_name, particle_name, save_path=None,
     plt.close()
 
 
-def flatness_pt_figure(proba, track_pt, track_name, particle_name, save_path=None, show=False):
+def flatness_pt_figure(proba, proba_baseline, track_pt, track_name, particle_name, save_path=None, show=False):
 
     """
     Plot signal efficiency vs TrackPt figure.
     :param proba: array, shape = [n_samples], predicted probabilities.
+    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
     :param track_p: array, shape = [n_samples], TrackPt values.
     :param track_name: string, name.
     :param particle_name: string, name.
@@ -444,7 +476,8 @@ def flatness_pt_figure(proba, track_pt, track_name, particle_name, save_path=Non
     :param show: boolean, if true the figure will be displayed.
     """
 
-    thresholds = numpy.percentile(proba, 100 - numpy.array([5, 20, 40, 60, 80]))
+    thresholds = numpy.percentile(proba, 100 - numpy.array([20, 50, 80]))
+    thresholds_baseline = numpy.percentile(proba_baseline, 100 - numpy.array([20, 50, 80]))
 
     eff = get_efficiencies(proba,
                            track_pt,
@@ -453,17 +486,43 @@ def flatness_pt_figure(proba, track_pt, track_name, particle_name, save_path=Non
                            ignored_sideband=0,
                            thresholds=thresholds)
 
+    eff_baseline = get_efficiencies(proba_baseline,
+                                    track_pt,
+                                    bins_number=30,
+                                    errors=True,
+                                    ignored_sideband=0,
+                                    thresholds=thresholds_baseline)
+
     for i in thresholds:
         eff[i] = (eff[i][0], 100. * eff[i][1], 100. * eff[i][2], eff[i][3])
 
-    plot_fig = ErrorPlot(eff)
+    for i in thresholds_baseline:
+        eff_baseline[i] = (eff_baseline[i][0], 100. * eff_baseline[i][1], 100. * eff_baseline[i][2], eff_baseline[i][3])
+
+
+    eff_total = OrderedDict()
+    num = len(eff) + len(eff_baseline)
+
+    for i in range(len(eff)):
+
+        v = eff[eff.keys()[i]]
+        v_baseline = eff_baseline[eff_baseline.keys()[i]]
+
+        eff_total[num] = v
+        eff_total[num - 1] = v_baseline
+        num += -2
+
+    plot_fig = ErrorPlot(eff_total)
     plot_fig.ylim = (0, 100)
 
     plot_fig.plot(new_plot=True, figsize=(10,7))
-    plt.legend(['Eff = 5 %', 'Eff = 20 %', 'Eff = 40 %', 'Eff = 60 %', 'Eff = 80 %'], loc='best',prop={'size':15})
+    labels = ['Eff model = 20 %', 'Eff baseline = 20 %',
+              'Eff model = 50 %', 'Eff baseline = 50 %',
+              'Eff model = 80 %', 'Eff baseline = 80 %']
+    plt.legend(labels, loc='best',prop={'size':12}, framealpha=0.5, ncol=1)
     plt.xlabel(track_name + ' ' + particle_name + ' Transverse Momentum / MeV/c', size=15)
     plt.xticks(size=15)
-    plt.ylabel('Efficiency / %', size=15)
+    plt.ylabel('Efficiency / %', size=12)
     plt.yticks(size=15)
     plt.title('Flatness_SignalMVAEffVTrackPt_' + track_name + ' ' + particle_name, size=15)
 
@@ -477,12 +536,13 @@ def flatness_pt_figure(proba, track_pt, track_name, particle_name, save_path=Non
     plt.close()
 
 
-def get_all_flatness_figures(data, probas, labels, track_name, particle_names, save_path=None, show=False):
+def get_all_p_pt_flatness_figures(data, probas, probas_baseline, labels, track_name, particle_names, save_path=None, show=False):
 
     """
     Plot signal efficiency vs TrackP figure.
     :param data: pandas.dataFrame() data.
-    :param probas: bdarray, shape = [n_samples, n_classes], predicted probabilities.
+    :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
+    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
     :param labels: array, shape = [n_samples], class labels 0, 1, ..., n_classes - 1.
     :param track_p: array, shape = [n_samples], TrackP values.
     :param track_name: string, name.
@@ -511,19 +571,263 @@ def get_all_flatness_figures(data, probas, labels, track_name, particle_names, s
 
         probas[sel_class_p, num], track_p[sel_class_p]
 
-        flatness_p_figure(probas[sel_class_p, num],
+        flatness_p_figure(probas[sel_class_p, num], probas_baseline[sel_class_p, num],
                           track_p[sel_class_p],
                           track_name,
                           particle_names[num],
                           save_path=save_path,
                           show=show)
 
-        flatness_pt_figure(probas[sel_class_pt, num],
+        flatness_pt_figure(probas[sel_class_pt, num], probas_baseline[sel_class_pt, num],
                           track_pt[sel_class_pt],
                           track_name,
                           particle_names[num],
                           save_path=save_path,
                           show=show)
+
+
+from collections import OrderedDict
+
+def flatness_ntracks_figure(proba, proba_baseline, ntracks, track_name, particle_name, save_path=None, show=False):
+
+    """
+    Plot signal efficiency vs TrackP figure.
+    :param proba: array, shape = [n_samples], predicted probabilities.
+    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
+    :param ntracks: array, shape = [n_samples], NumProtoParticles values.
+    :param track_name: string, name.
+    :param particle_name: string, name.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    """
+
+    thresholds = numpy.percentile(proba, 100 - numpy.array([20, 50, 80]))
+    thresholds_baseline = numpy.percentile(proba_baseline, 100 - numpy.array([20, 50, 80]))
+
+    eff = get_efficiencies(proba,
+                           ntracks,
+                           bins_number=30,
+                           errors=True,
+                           ignored_sideband=0,
+                           thresholds=thresholds)
+
+    eff_baseline = get_efficiencies(proba_baseline,
+                                    ntracks,
+                                    bins_number=30,
+                                    errors=True,
+                                    ignored_sideband=0,
+                                    thresholds=thresholds_baseline)
+
+    for i in thresholds:
+        eff[i] = (eff[i][0], 100. * eff[i][1], 100. * eff[i][2], eff[i][3])
+
+    for i in thresholds_baseline:
+        eff_baseline[i] = (eff_baseline[i][0], 100. * eff_baseline[i][1], 100. * eff_baseline[i][2], eff_baseline[i][3])
+
+
+    eff_total = OrderedDict()
+    num = len(eff) + len(eff_baseline)
+
+    for i in range(len(eff)):
+
+        v = eff[eff.keys()[i]]
+        v_baseline = eff_baseline[eff_baseline.keys()[i]]
+
+        eff_total[num] = v
+        eff_total[num - 1] = v_baseline
+        num += -2
+
+
+    plot_fig = ErrorPlot(eff_total)
+    plot_fig.ylim = (0, 100)
+
+    plot_fig.plot(new_plot=True, figsize=(10,7))
+    labels = ['Eff model = 20 %', 'Eff baseline = 20 %',
+              'Eff model = 50 %', 'Eff baseline = 50 %',
+              'Eff model = 80 %', 'Eff baseline = 80 %']
+    plt.legend(labels, loc='best',prop={'size':12}, framealpha=0.5, ncol=3)
+    plt.xlabel(track_name + ' ' + particle_name + ' NumProtoParticles / units', size=15)
+    plt.xticks(size=15)
+    plt.ylabel('Efficiency / %', size=15)
+    plt.yticks(size=15)
+    plt.title('Flatness_SignalMVAEffVNumProtoParticles_' + track_name + ' ' + particle_name, size=15)
+
+    if save_path != None:
+        plt.savefig(save_path + "/" + 'Flatness_SignalMVAEffVNumProtoParticles_' + track_name + '_' + particle_name + ".png")
+
+    if show == True:
+        plt.show()
+
+    plt.clf()
+    plt.close()
+
+
+
+def get_all_ntracks_flatness_figures(data, probas, probas_baseline, labels, track_name, particle_names, save_path=None, show=False):
+
+    """
+    Plot signal efficiency vs TrackP figure.
+    :param data: pandas.dataFrame() data.
+    :param probas: bdarray, shape = [n_samples, n_classes], predicted probabilities.
+    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
+    :param labels: array, shape = [n_samples], class labels 0, 1, ..., n_classes - 1.
+    :param track_p: array, shape = [n_samples], TrackP values.
+    :param track_name: string, name.
+    :param particle_names: list of strings, particle names.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    """
+
+    labels = labels_transform(labels)
+
+    GeV = 1000
+    limits = {"TrackP": [100*GeV, 0],
+              "TrackPt": [10*GeV, 0] }
+
+    ntracks = data.NumProtoParticles.values
+
+
+    for num in range(len(particle_names)):
+
+
+        probas[:, num], ntracks
+
+        flatness_ntracks_figure(probas[:, num], probas_baseline[:, num],
+                                ntracks,
+                                track_name,
+                                particle_names[num],
+                                save_path=save_path,
+                                show=show)
+
+
+from collections import OrderedDict
+
+def get_eta(track_p, track_pt):
+
+    """
+    Calculate pseudo rapidity values
+    :param track_p: array, shape = [n_samples], TrackP values.
+    :param track_pt: array, shape = [n_samples], TrackPt values.
+    :return: array, shape = [n_samples], Pseudo Rapdity values.
+    """
+
+    sinz = 1. * track_pt / track_p
+    z = numpy.arcsin(sinz)
+
+    eta = - numpy.log(numpy.tan(0.5 * z))
+
+    return eta
+
+def flatness_eta_figure(proba, proba_baseline, eta, track_name, particle_name, save_path=None, show=False):
+
+    """
+    Plot signal efficiency vs TrackP figure.
+    :param proba: array, shape = [n_samples], predicted probabilities.
+    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
+    :param eta: array, shape = [n_samples], Pseudo Rapidity values.
+    :param track_name: string, name.
+    :param particle_name: string, name.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    """
+
+    thresholds = numpy.percentile(proba, 100 - numpy.array([20, 50, 80]))
+    thresholds_baseline = numpy.percentile(proba_baseline, 100 - numpy.array([20, 50, 80]))
+
+    eff = get_efficiencies(proba,
+                           eta,
+                           bins_number=30,
+                           errors=True,
+                           ignored_sideband=0.005,
+                           thresholds=thresholds)
+
+    eff_baseline = get_efficiencies(proba_baseline,
+                                    eta,
+                                    bins_number=30,
+                                    errors=True,
+                                    ignored_sideband=0.005,
+                                    thresholds=thresholds_baseline)
+
+    for i in thresholds:
+        eff[i] = (eff[i][0], 100. * eff[i][1], 100. * eff[i][2], eff[i][3])
+
+    for i in thresholds_baseline:
+        eff_baseline[i] = (eff_baseline[i][0], 100. * eff_baseline[i][1], 100. * eff_baseline[i][2], eff_baseline[i][3])
+
+
+    eff_total = OrderedDict()
+    num = len(eff) + len(eff_baseline)
+
+    for i in range(len(eff)):
+
+        v = eff[eff.keys()[i]]
+        v_baseline = eff_baseline[eff_baseline.keys()[i]]
+
+        eff_total[num] = v
+        eff_total[num - 1] = v_baseline
+        num += -2
+
+
+    plot_fig = ErrorPlot(eff_total)
+    plot_fig.ylim = (0, 100)
+
+    plot_fig.plot(new_plot=True, figsize=(10,7))
+    labels = ['Eff model = 20 %', 'Eff baseline = 20 %',
+              'Eff model = 50 %', 'Eff baseline = 50 %',
+              'Eff model = 80 %', 'Eff baseline = 80 %']
+    plt.legend(labels, loc='best',prop={'size':10}, framealpha=0.5, ncol=3)
+    plt.xlabel(track_name + ' ' + particle_name + ' Pseudo Rapidity', size=15)
+    plt.xticks(size=15)
+    plt.ylabel('Efficiency / %', size=15)
+    plt.yticks(size=15)
+    plt.title('Flatness_SignalMVAEffVPseudoRapidity_' + track_name + ' ' + particle_name, size=15)
+
+    if save_path != None:
+        plt.savefig(save_path + "/" + 'Flatness_SignalMVAEffVPseudoRapidity_' + track_name + '_' + particle_name + ".png")
+
+    if show == True:
+        plt.show()
+
+    plt.clf()
+    plt.close()
+
+
+
+def get_all_eta_flatness_figures(data, probas, probas_baseline, labels, track_name, particle_names, save_path=None, show=False):
+
+    """
+    Plot signal efficiency vs TrackP figure.
+    :param data: pandas.dataFrame() data.
+    :param probas: bdarray, shape = [n_samples, n_classes], predicted probabilities.
+    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
+    :param labels: array, shape = [n_samples], class labels 0, 1, ..., n_classes - 1.
+    :param track_p: array, shape = [n_samples], TrackP values.
+    :param track_name: string, name.
+    :param particle_names: list of strings, particle names.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    """
+
+    labels = labels_transform(labels)
+
+    GeV = 1000
+    limits = {"TrackP": [100*GeV, 0],
+              "TrackPt": [10*GeV, 0] }
+
+    track_p = data.TrackP.values
+    track_pt = data.TrackPt.values
+    eta = get_eta(track_p, track_pt)
+
+
+    for num in range(len(particle_names)):
+
+
+        flatness_eta_figure(probas[:, num], probas_baseline[:, num],
+                                eta,
+                                track_name,
+                                particle_names[num],
+                                save_path=save_path,
+                                show=show)
 
 
 
@@ -571,3 +875,62 @@ def get_one_vs_one_roc_curves(labels, probas, curve_labels, save_path=None, show
 
         plt.clf()
         plt.close()
+
+
+def get_roc_aoc_ratio_matrix(matrix_one, matrix_two, save_path=None, show=True):
+
+    """
+    Divide matrix_one to matrix_two.
+    :param matrix_one: pandas.DataFrame with column 'Class' which contain class names.
+    :param matrix_two: pandas.DataFrame with column 'Class' which contain class names.
+    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
+    :param show: boolean, if true the figure will be displayed.
+    :return: pandas.DataFrame roc_aoc_ratio_matrix: (1 - matrix_one / matrix_two) * 100%
+    """
+
+    # Calculate roc_auc_matrices
+    classes = list(matrix_one.index)
+    roc_auc_matrices = numpy.ones((len(classes), len(classes)))
+
+    for first in range(len(classes)):
+        for second in range(len(classes)):
+
+            roc_auc_one = matrix_one.loc[classes[first], classes[second]]
+            roc_auc_two = matrix_two.loc[classes[first], classes[second]]
+            roc_auc_matrices[first, second] = (1. - (1. - roc_auc_one) / (1. - roc_auc_two)) * 100.
+
+    # Save roc_auc_matrices
+    matrix = pandas.DataFrame(columns=classes, index=classes)
+
+    for num in range(len(classes)):
+
+        matrix[classes[num]] = roc_auc_matrices[num, :]
+
+    if save_path != None:
+        matrix.to_csv(save_path + "/class_vs_class_roc_aoc_rel_matrix.csv")
+
+    # Plot roc_auc_matrices
+    from matplotlib import cm
+    inline_rc = dict(mpl.rcParams)
+    import seaborn as sns
+    plt.figure(figsize=(10,7))
+    sns.set()
+    ax = plt.axes()
+    sns.heatmap(matrix, vmin=-100., vmax=100.0, annot=True, fmt='.1f', ax=ax, cmap=cm.seismic)
+    plt.xticks(size=15)
+    plt.yticks(size=15)
+    plt.title('Particle vs particle roc aucs ratio', size=15)
+
+    if save_path != None:
+        plt.savefig(save_path + "/class_vs_class_roc_aoc_rel_matrix.png")
+
+    if show == True:
+        plt.show()
+
+    plt.clf()
+    plt.close()
+
+    mpl.rcParams.update(mpl.rcParamsDefault)
+    mpl.rcParams.update(inline_rc)
+
+    return matrix
