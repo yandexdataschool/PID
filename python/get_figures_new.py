@@ -175,8 +175,7 @@ def get_por_eff(mva, labels, bins, min_mva, max_mva):
 
 def get_miss_and_eff(mva_p_one, mva_p_two, bins, min_mva, max_mva):
 
-    step = 1. * (max_mva - min_mva) / bins
-    edges = [min_mva + i * step for i in range(0, bins + 1)]
+    edges = numpy.percentile(mva_p_two, 100 - numpy.array(numpy.arange(0, 100.1, 0.1)))
 
     effs_p_one = []
     eff_errs_p_one = []
