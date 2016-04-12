@@ -402,7 +402,7 @@ def flatness_p_figure(proba, proba_baseline, track_p, track_name, particle_name,
     :param show: boolean, if true the figure will be displayed.
     """
 
-    thresholds = numpy.percentile(proba, 100 - numpy.array([10, 20, 80]))
+    thresholds = numpy.percentile(proba, 100 - numpy.array([20, 50, 80]))
     thresholds_baseline = numpy.percentile(proba_baseline, 100 - numpy.array([20, 50, 80]))
 
     eff = get_efficiencies(proba,
