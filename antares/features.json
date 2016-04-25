@@ -1,0 +1,74 @@
+{
+ "muon": [
+  "MuonNShared", 
+  "MuonIsLooseMuon", 
+  "MuonIsMuon", 
+  "MuonBkgLL", 
+  "MuonMuLL"
+ ], 
+ "track": [
+  "TrackFitVeloChi2", 
+  "TrackFitVeloNDoF", 
+  "TrackFitMatchChi2", 
+  "TrackGhostProbability", 
+  "TrackP", 
+  "TrackChi2PerDof", 
+  "TrackFitTChi2", 
+  "TrackPt", 
+  "TrackNumDof", 
+  "TrackFitTNDoF", 
+  "TrackDOCA"
+ ], 
+ "acceptance": [
+  "InAccSpd", 
+  "InAccPrs", 
+  "InAccBrem", 
+  "InAccEcal", 
+  "InAccHcal", 
+  "InAccMuon"
+ ], 
+ "DLL": [
+  "CombDLLmu", 
+  "CombDLLpi", 
+  "CombDLLp", 
+  "CombDLLe", 
+  "CombDLLk"
+ ], 
+ "RICH": [
+  "RichAboveMuThres", 
+  "RichAboveElThres", 
+  "RichAbovePiThres", 
+  "RichAboveKaThres", 
+  "RichAbovePrThres", 
+  "RichUsedR1Gas", 
+  "RichUsedR2Gas", 
+  "RichDLLbt", 
+  "RichDLLpi", 
+  "RichDLLe", 
+  "RichDLLp", 
+  "RichDLLmu", 
+  "RichDLLk"
+ ], 
+ "CALO": [
+  "CaloBremMatch", 
+  "CaloElectronMatch", 
+  "CaloTrMatch", 
+  "CaloTrajectoryL", 
+  "CaloChargedSpd", 
+  "CaloChargedPrs", 
+  "CaloChargedEcal", 
+  "CaloNeutralSpd", 
+  "CaloNeutralPrs", 
+  "CaloNeutralEcal", 
+  "CaloSpdE", 
+  "CaloPrsE", 
+  "CaloEcalE", 
+  "CaloHcalE", 
+  "EcalPIDmu", 
+  "HcalPIDmu", 
+  "PrsPIDe", 
+  "BremPIDe", 
+  "EcalPIDe", 
+  "HcalPIDe"
+ ]
+}
