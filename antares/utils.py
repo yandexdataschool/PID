@@ -304,40 +304,83 @@ def compute_roc_auc_matrix(labels, predictions_dict, weights=None):
     matrix = pandas.DataFrame(roc_auc_matrices, columns=names_labels_correspondence.keys(),
                               index=names_labels_correspondence.keys())
 
+    fig=plot_matrix(matrix)
+    return fig, matrix
+
+
+def plot_matrix(matrix):
     # Plot roc_auc_matrices
     inline_rc = dict(matplotlib.rcParams)
     
     import seaborn as sns
-    plt.figure(figsize=(10,7))
+    fig = plt.figure(figsize=(10,7))
     sns.set()
     ax = plt.axes()
     sns.heatmap(matrix, vmin=0.8, vmax=1., annot=True, fmt='.5f', ax=ax, cmap=cm.coolwarm)
     plt.title('Particle vs particle ROC AUCs', size=15)
     plt.xticks(size=15)
     plt.yticks(size=15)
+    
     plt.show()
     plt.clf()
     plt.close()
     
     matplotlib.rcParams.update(matplotlib.rcParamsDefault)
     matplotlib.rcParams.update(inline_rc)
+    return fig
 
-    return matrix
 
-
-def plot_flatness_by_particle(labels, predictions_dict, spectator, spectator_name, 
+def plot_flatness_by_particle(labels, predictions_dict, spectator, spectator_name, predictions_dict_comparison=None,
+                              names_algorithms=['MVA', 'Baseline'],
                               weights=None, bins_number=30, ignored_sideband=0.1, 
                               thresholds=None, cuts_values=False):
     plt.figure(figsize=(18, 22))
     for n, (name, label) in enumerate(names_labels_correspondence.items()):
         plt.subplot(3, 2, n + 1)
         mask =labels == label
+        legends = []
+        for preds, name_algo in zip([predictions_dict, predictions_dict_comparison], names_algorithms):
+            if preds is None:
+                continue
+            probs = preds[label][mask]
+            if cuts_values:
+                thresholds_values = cut_values
+            else:
+                thresholds_values = [weighted_quantile(probs, quantiles=1 - eff / 100., 
+                                                       sample_weight=None if weights is None else weights[mask])
+                                     for eff in thresholds]
+            eff = get_efficiencies(probs, spectator[mask], 
+                                   sample_weight=None if weights is None else weights[mask], 
+                                   bins_number=bins_number, errors=True, ignored_sideband=ignored_sideband,
+                                   thresholds=thresholds_values)
+            for thr in thresholds_values:
+                eff[thr] = (eff[thr][0], 100*numpy.array(eff[thr][1]), 100*numpy.array(eff[thr][2]), eff[thr][3])
+            plot_fig = ErrorPlot(eff)
+            plot_fig.xlabel = '{} {}'.format(name, spectator_name)
+            plot_fig.ylabel = 'Efficiency'
+            plot_fig.title = name
+            plot_fig.ylim = (0, 100)
+            plot_fig.plot(fontsize=22)
+            plt.xticks(fontsize=12), plt.yticks(fontsize=12)
+            legends.append(['Eff {}% for {}'.format(thr, name_algo) for thr in thresholds])
+        plt.legend(numpy.concatenate(legends), loc='best', fontsize=18, framealpha=0.5)
+
+            
+def plot_flatness_particle(labels, predictions_dict, spectator, spectator_name, particle_name, 
+                           weights=None, bins_number=30, ignored_sideband=0.1, 
+                           thresholds=None, cuts_values=False):
+    plt.figure(figsize=(18, 22))
+    for n, (name, label) in enumerate(names_labels_correspondence.items()):
+        plt.subplot(3, 2, n + 1)
+        mask = labels == names_labels_correspondence[particle_name]
         probs = predictions_dict[label][mask]
+        mask_signal = labels == label
+        probs_signal = predictions_dict[label][mask_signal]
         if cuts_values:
             thresholds_values = cut_values
         else:
-            thresholds_values = [weighted_quantile(probs, quantiles=1 - eff / 100., 
-                                                   sample_weight=None if weights is None else weights[mask])
+            thresholds_values = [weighted_quantile(probs_signal, quantiles=1 - eff / 100., 
+                                                   sample_weight=None if weights is None else weights[mask_signal])
                                  for eff in thresholds]
         eff = get_efficiencies(probs, spectator[mask], 
                                sample_weight=None if weights is None else weights[mask], 
@@ -346,15 +389,15 @@ def plot_flatness_by_particle(labels, predictions_dict, spectator, spectator_nam
         for thr in thresholds_values:
             eff[thr] = (eff[thr][0], 100*numpy.array(eff[thr][1]), 100*numpy.array(eff[thr][2]), eff[thr][3])
         plot_fig = ErrorPlot(eff)
-        plot_fig.xlabel = '{} {}'.format(name, spectator_name)
+        plot_fig.xlabel = '{} {}'.format(particle_name, spectator_name)
         plot_fig.ylabel = 'Efficiency'
-        plot_fig.title = labels_names_correspondence[label]
+        plot_fig.title = 'MVA {}'.format(name)
         plot_fig.ylim = (0, 100)
         plot_fig.plot(fontsize=22)
         plt.xticks(fontsize=12), plt.yticks(fontsize=12)
         if not cuts_values:
-            plt.legend(['Eff {}%'.format(thr) for thr in thresholds], loc='best', fontsize=18, framealpha=0.5)
-          
+            plt.legend(['Signal Eff {}%'.format(thr) for thr in thresholds], loc='best', fontsize=18, framealpha=0.5)
+
     
 def compute_cvm_by_particle(labels, predictions_dict, spectators):
     cvm_values = defaultdict(list)
@@ -364,3 +407,20 @@ def compute_cvm_by_particle(labels, predictions_dict, spectators):
             probs = predictions_dict[label][mask]
             cvm_values[spectator_name].append(compute_cvm(probs, spectator[mask]))
     return pandas.DataFrame(cvm_values, index=names_labels_correspondence.keys())
+
+
+def compute_eta(track_p, track_pt):
+
+    """
+    Calculate pseudo rapidity values
+    
+    :param track_p: array, shape = [n_samples], TrackP values.
+    :param track_pt: array, shape = [n_samples], TrackPt values.
+    :return: array, shape = [n_samples], Pseudo Rapdity values.
+    """
+
+    sinz = 1. * track_pt / track_p
+    z = numpy.arcsin(sinz)
+    eta = - numpy.log(numpy.tan(0.5 * z))
+
+    return eta
