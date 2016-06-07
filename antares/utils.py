@@ -6,6 +6,16 @@ import matplotlib
 from matplotlib import cm
 from sklearn.metrics import roc_auc_score
 from collections import OrderedDict
+from rep.utils import get_efficiencies
+from rep.plotting import ErrorPlot
+from rep.utils import weighted_quantile
+from sklearn.metrics import roc_curve, roc_auc_score
+from collections import defaultdict
+from rep.metaml.utils import map_on_cluster
+from rep.metaml.factory import train_estimator
+import time
+from rep.metaml import ClassifiersFactory
+
 
 
 # names_pdg_correspondence = {"Ghost": 0, "Electron": 11, "Muon": 13, "Pion": 211, "Kaon": 321, "Proton": 2212}
@@ -24,6 +34,7 @@ def shrink_floats(data):
     for column in data.columns:
         if data[column].dtype == 'float64':
             data[column] = data[column].astype('float32')
+        
         
 def compute_labels_and_weights(pdg_column):
     """
@@ -229,16 +240,7 @@ def compute_cvm(predictions, masses, n_neighbours=200, step=50):
     return numpy.mean(cvms)
 
 
-
-from rep.utils import get_efficiencies
-from rep.plotting import ErrorPlot
-from rep.utils import weighted_quantile
-from sklearn.metrics import roc_curve, roc_auc_score
-from utils import compute_cvm
-from collections import defaultdict
-
-
-def plot_roc_one_vs_rest(labels, predictions_dict, weights=None):
+def plot_roc_one_vs_rest(labels, predictions_dict, weights=None, physics_notion=False, predictions_dict_comparison=None, separate_particles=False, algorithms_name=('MVA', 'baseline')):
     """
     Plot roc curves one versus rest.
     
@@ -246,14 +248,30 @@ def plot_roc_one_vs_rest(labels, predictions_dict, weights=None):
     :param dict(array) predictions_dict: dict of label/predictions
     :param array weights: sample weights
     """
-    plt.figure(figsize=(10, 8))
+    if separate_particles:
+        plt.figure(figsize=(22, 22))
+    else:
+        plt.figure(figsize=(10, 8))
     for label, name in labels_names_correspondence.items():
-        fpr, tpr, _ = roc_curve(labels == label, predictions_dict[label], sample_weight=weights)
-        auc = roc_auc_score(labels == label, predictions_dict[label], sample_weight=weights)
-        plt.plot(tpr, 1-fpr, label='{}, AUC={:1.5f}'.format(name, auc), linewidth=2)
-    plt.xlabel('Signal efficiency', fontsize=22)
-    plt.ylabel('Background rejection', fontsize=22)
-    plt.legend(loc='best', fontsize=18)
+        if separate_particles:
+            plt.subplot(3, 2, label + 1)
+        for preds, prefix in zip([predictions_dict, predictions_dict_comparison], algorithms_name):
+            if preds is None:
+                continue
+            fpr, tpr, _ = roc_curve(labels == label, preds[label], sample_weight=weights)
+            auc = roc_auc_score(labels == label, preds[label], sample_weight=weights)
+            if physics_notion:
+                plt.plot(tpr * 100, fpr * 100, label='{}, {}, AUC={:1.5f}'.format(prefix, name, auc), linewidth=2)
+                plt.yscale('log', nonposy='clip')
+            else:
+                plt.plot(tpr, 1-fpr, label='{}, AUC={:1.5f}'.format(name, auc), linewidth=2)
+        if physics_notion:
+            plt.xlabel('Efficiency', fontsize=22)
+            plt.ylabel('Overall MisID Efficiency', fontsize=22)
+        else:
+            plt.xlabel('Signal efficiency', fontsize=22)
+            plt.ylabel('Background rejection', fontsize=22)
+        plt.legend(loc='best', fontsize=18)
     
     
 def plot_roc_one_vs_one(labels, predictions_dict, weights=None):
@@ -308,7 +326,7 @@ def compute_roc_auc_matrix(labels, predictions_dict, weights=None):
     return fig, matrix
 
 
-def plot_matrix(matrix):
+def plot_matrix(matrix, vmin=0.8, vmax=1., title='Particle vs particle ROC AUCs', fmt='.5f'):
     # Plot roc_auc_matrices
     inline_rc = dict(matplotlib.rcParams)
     
@@ -316,8 +334,8 @@ def plot_matrix(matrix):
     fig = plt.figure(figsize=(10,7))
     sns.set()
     ax = plt.axes()
-    sns.heatmap(matrix, vmin=0.8, vmax=1., annot=True, fmt='.5f', ax=ax, cmap=cm.coolwarm)
-    plt.title('Particle vs particle ROC AUCs', size=15)
+    sns.heatmap(matrix, vmin=vmin, vmax=vmax, annot=True, fmt=fmt, ax=ax, cmap=cm.coolwarm)
+    plt.title(title, size=15)
     plt.xticks(size=15)
     plt.yticks(size=15)
     
@@ -333,8 +351,8 @@ def plot_matrix(matrix):
 def plot_flatness_by_particle(labels, predictions_dict, spectator, spectator_name, predictions_dict_comparison=None,
                               names_algorithms=['MVA', 'Baseline'],
                               weights=None, bins_number=30, ignored_sideband=0.1, 
-                              thresholds=None, cuts_values=False):
-    plt.figure(figsize=(18, 22))
+                              thresholds=None, cuts_values=False, ncol=1):
+    plt.figure(figsize=(22, 20))
     for n, (name, label) in enumerate(names_labels_correspondence.items()):
         plt.subplot(3, 2, n + 1)
         mask =labels == label
@@ -362,8 +380,8 @@ def plot_flatness_by_particle(labels, predictions_dict, spectator, spectator_nam
             plot_fig.ylim = (0, 100)
             plot_fig.plot(fontsize=22)
             plt.xticks(fontsize=12), plt.yticks(fontsize=12)
-            legends.append(['Eff {}% for {}'.format(thr, name_algo) for thr in thresholds])
-        plt.legend(numpy.concatenate(legends), loc='best', fontsize=18, framealpha=0.5)
+            legends.append(['{} Eff {}%'.format(thr, name_algo) for thr in thresholds])
+        plt.legend(numpy.concatenate(legends), loc='best', fontsize=12, framealpha=0.5, ncol=ncol)
 
             
 def plot_flatness_particle(labels, predictions_dict, spectator, spectator_name, particle_name, 
@@ -424,3 +442,42 @@ def compute_eta(track_p, track_pt):
     eta = - numpy.log(numpy.tan(0.5 * z))
 
     return eta
+
+
+class ClassifiersFactoryByClass(ClassifiersFactory):
+    def fit(self, X, y, sample_weight=None, parallel_profile=None, features=None):
+        """
+        Train all estimators on the same data.
+        :param X: pandas.DataFrame of shape [n_samples, n_features] with features
+        :param y: array-like of shape [n_samples] with labels of samples
+        :param sample_weight: weights of events,
+        array-like of shape [n_samples] or None if all weights are equal
+        :param features: features to train estimators
+        If None, estimators will be trained on `estimator.features`
+        :type features: None or list[str]
+        :param parallel_profile: profile of parallel execution system or None
+        :type parallel_profile: None or str
+        :return: self
+        """
+        if features is not None:
+            for name, estimator in self.items():
+                if estimator.features is not None:
+                    print('Overwriting features of estimator ' + name)
+                self[name].set_params(features=features)
+
+        start_time = time.time()
+        labels = []
+        for key in self.keys():
+            labels.append((y == names_labels_correspondence[key]) * 1)
+        result = map_on_cluster(parallel_profile, train_estimator, list(self.keys()), list(self.values()),
+                                [X] * len(self), labels, [sample_weight] * len(self))
+        for status, data in result:
+            if status == 'success':
+                name, estimator, spent_time = data
+                self[name] = estimator
+                print('model {:12} was trained in {:.2f} seconds'.format(name, spent_time))
+            else:
+                print('Problem while training on the node, report:\n', data)
+
+        print("Totally spent {:.2f} seconds on training".format(time.time() - start_time))
+        return self
