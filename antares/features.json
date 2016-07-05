@@ -70,5 +70,17 @@
   "BremPIDe", 
   "EcalPIDe", 
   "HcalPIDe"
- ]
+ ],
+"PV": [
+  "piplus_OWNPV_X",
+  "piplus_OWNPV_Y",
+  "piplus_OWNPV_Z", 
+  "piplus_OWNPV_XERR",
+  "piplus_OWNPV_YERR",
+  "piplus_OWNPV_ZERR",
+  "piplus_OWNPV_CHI2",
+  "piplus_OWNPV_NDOF",
+  "piplus_IP_OWNPV", 
+  "piplus_IPCHI2_OWNPV"
+]
 }
