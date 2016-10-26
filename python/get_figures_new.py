@@ -25,6 +25,33 @@ colors = ['k', 'r', 'g', 'b', 'gold', 'm']
 
 
 def get_bins(x, y, bins, x_min, x_max):
+    """
+    Splits data into x-bins. Calculate y-mean and y-std in the each x-bin.
+
+    Parameters
+    ----------
+    x : array_like
+        X-values.
+    y : array_like
+        Y-values.
+    bins : int
+        Number of x-bins.
+    x_min : float
+        Min x value.
+    x_max : float
+        Max x value.
+
+    Returns
+    -------
+    x_means : array_like
+        Mean x values for the each x-bin.
+    y_means : array_like
+        Mean y values for the each x-bin.
+    x_err : array_like
+        Error of the x-mean values for the each x-bin.
+    y_err : array_like
+        Error of the y-mean values for the each x-bin.
+    """
 
     step = 1. * ( x_max - x_min ) / bins
     edges = [x_min + i * step for i in range(0, bins+1)]
@@ -49,6 +76,31 @@ def get_bins(x, y, bins, x_min, x_max):
     return x_means, y_means, x_err, y_err
 
 def get_hist(var, bins, min_var, max_var):
+    """
+    Constructs a histogram of a variable values.
+
+    Parameters
+    ----------
+    var : array_like
+        The variable values.
+    bins : int
+        Number of bins in the histogram.
+    min_var : float
+        Min value of the variable.
+    max_var : float
+        Max value of the variable.
+
+    Returns
+    -------
+    var_bins : array_like
+        Coordinates of the bin centers.
+    n_bins : array_like
+        Relative amounts of the data points in the bins. This is defined as a ratio of number of data points in a bin and the total number of data points.
+    var_errs : array_like
+        Half of the bins' width.
+    n_err : array_like
+        Errors of the relative amount estimation in the bins.
+    """
 
 
     step = 1. * (max_var - min_var) / bins
@@ -79,6 +131,21 @@ def get_hist(var, bins, min_var, max_var):
     return var_bins, n_bins, var_errs, n_errs
 
 def poisson_error(sel, total):
+    """
+    Calculates a Poisson error of a selected data fraction size (signal efficiency error).
+
+    Parameters
+    ----------
+    sel : int
+        Number of the selected data points.
+    total : int
+        Total number of the data points.
+
+    Return
+    ------
+    err : float
+        The Poisson error in percents.
+    """
 
     p = 1. * sel / total
     n = 1. - p
@@ -89,6 +156,31 @@ def poisson_error(sel, total):
     return 100 * err
 
 def get_eff(mva, bins, min_mva, max_mva):
+    """
+    Calculates signal efficiencies based on a MVA output.
+
+    Parameters
+    ----------
+    mva : array_like
+        The MVA output.
+    bins : int
+        Number of bins of the MVA output.
+    min_mva : float
+        Min value of the MVA output.
+    max_mva : float
+        Max value of the MVA output.
+
+    Returns
+    -------
+    effs : array_like
+        The signal efficiencies.
+    edges : array_like
+        Edges of the bins.
+    eff_errs : array_like
+        Errors of the signal efficiencies estimation.
+    mva_errs : array_like
+        Half of the bins width.
+    """
 
     step = 1. * (max_mva - min_mva) / bins
     edges = [min_mva + i * step for i in range(0, bins + 1)]
@@ -111,6 +203,35 @@ def get_eff(mva, bins, min_mva, max_mva):
 
 
 def get_eff_v_var(mva, mva_cut, var, bins, min_var, max_var):
+    """
+    Calculates signal efficiencies in each variable bin based on a MVA output cut value.
+
+    Parameters
+    ----------
+    mva : array_like
+        The MVA output.
+    mva_cut : float
+        The MVA output cut value.
+    var : array_like
+        The variable values
+    bins : int
+        Number of the variable bins.
+    min_var : float
+        The min value of the variable.
+    max_var : float
+        The max value of the variable.
+
+    Returns
+    -------
+    effs : array_like
+        The signal efficiencies for the variable bins.
+    vars_bins : array_like
+        Centers of the bins.
+    eff_errs : array_like
+        Errors of the signal efficiencies estimation.
+    var_errs : array_like
+        Half of the bins width.
+    """
 
     # step = 1. * (max_var - min_var) / bins
     # edges = [min_var + i * step for i in range(0, bins + 1)]
@@ -144,6 +265,32 @@ def get_eff_v_var(mva, mva_cut, var, bins, min_var, max_var):
     return effs, vars_bins, eff_errs, var_errs
 
 def get_por_eff(mva, labels, bins, min_mva, max_mva):
+    """
+    Calculates signal purity and signal efficiency values based on the MVA output.
+
+    Parameters
+    ----------
+    mva : array_like
+        The MVA output.
+    labels : array_like
+        The track labels (signal or background).
+    bins : int
+        NUmber of MVA output bins.
+    min_mva : float
+        The min mva output value.
+    max_mva : The max mva output value.
+
+    Returns
+    -------
+    effs : array_like
+        The signal efficiencies for the MVA output bins.
+    eff_errs : array_like
+        Errors of the signal efficiencies estimation.
+    purs : array_like
+        The signal purities for the MVA output bins.
+    pur_errs : array_like
+        Errors of the signal puritie estimation.
+    """
 
     step = 1. * (max_mva - min_mva) / bins
     edges = [min_mva + i * step for i in range(0, bins + 1)]
@@ -174,6 +321,33 @@ def get_por_eff(mva, labels, bins, min_mva, max_mva):
 
 
 def get_miss_and_eff(mva_p_one, mva_p_two, bins, min_mva, max_mva):
+    """
+    Calculates the signal efficiencies for two particles using the same MVA output bins.
+
+    Parameters
+    ----------
+    mva_p_one : array_like
+        The MVA output for the first particle.
+    mva_p_two : array_like
+        The MVA output for the second particle.
+    bins : int
+        Number of the MVA output bins.
+    min_mva : float
+        The min value of the MVA output.
+    max_mva : float
+        The max value of the MVA output.
+
+    Returns
+    -------
+    effs_p_one : array_like
+        The signal efficiencies for the first particle.
+    effs_p_two : array_like
+        The signal efficiencies for the second particle.
+    eff_errs_p_one : array_like
+        Errors of the signal efficiencies estimation for the first particle.
+    eff_errs_p_two : array_like
+        Errors of the signal efficiencies estimation for the second particle.
+    """
 
     edges = numpy.percentile(mva_p_two, 100 - numpy.array(numpy.arange(0, 100.1, 0.1)))
 
@@ -200,6 +374,32 @@ def get_miss_and_eff(mva_p_one, mva_p_two, bins, min_mva, max_mva):
 
 
 def get_pur(mva, labels, bins, min_mva, max_mva):
+    """
+    Calculates signal purities based on the MVA output cuts.
+
+    Parameters
+    ----------
+    mva : array_like
+        The MVA output.
+    labels : array_like
+        The track labels (signal or background).
+    bins : int
+        NUmber of MVA output bins.
+    min_mva : float
+        The min mva output value.
+    max_mva : The max mva output value.
+
+    Returns
+    -------
+    purs : array_like
+        The signal purities for the MVA output bins.
+    pur_errs : array_like
+        Errors of the signal purities estimation.
+    edges : array_like
+        Edges of the MVA output bins or the MVA cuts.
+    mva_errs : array_like
+        Half of the MVA bins width.
+    """
 
     step = 1. * (max_mva - min_mva) / bins
     edges = [min_mva + i * step for i in range(0, bins + 1)]
@@ -231,7 +431,31 @@ def get_pur(mva, labels, bins, min_mva, max_mva):
 
 # MVA inputs
 
-def Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path="pic"):
+def Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path="pic"): # check this!!!
+    """
+    Plots histograms of input features for all particles.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    log : boolean
+        If True, the plots are in log scale of y axis.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -309,6 +533,28 @@ def Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path
 # MVA output V input profiles
 
 def MVAVInputs(params, eval_data, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots MVA outputs vs input features figures.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -375,6 +621,30 @@ def MVAVInputs(params, eval_data, eval_proba, eval_labels, features, path="pic")
 
 # Baseline MVA output V input profiles
 def BaselineMVAVInputs(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots baseline MVA output vs input features figures.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -445,6 +715,30 @@ def BaselineMVAVInputs(params, eval_data, eval_proba_baseline, eval_proba, eval_
 # Eff vs MVA Out | BaselineMVA cuts
 
 def MVAEffForBaselineMVACut(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots MVA signal efficiencies for the baseline MVA output cuts.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -507,6 +801,30 @@ def MVAEffForBaselineMVACut(params, eval_data, eval_proba_baseline, eval_proba, 
 
 # Eff vs BaselineMVA Out | MVA cuts
 def BaselineMVAEffForMVACut(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots baseline MVA signal efficiencies for the MVA output cuts.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -573,6 +891,30 @@ def BaselineMVAEffForMVACut(params, eval_data, eval_proba_baseline, eval_proba, 
 # Eff vs TrackP | BaselineMVA cuts
 
 def BaselineMVAEffVTrackP(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots baseline MVA signal efficiencies vs the tracks momenta.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -638,6 +980,30 @@ def BaselineMVAEffVTrackP(params, eval_data, eval_proba_baseline, eval_proba, ev
 # Eff vs TrackPt | BaselineMVA cuts
 
 def BaselineMVAEffVTrackPt(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots baseline MVA signal efficiencies vs the tracks transverse momenta.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -700,6 +1066,28 @@ def BaselineMVAEffVTrackPt(params, eval_data, eval_proba_baseline, eval_proba, e
 
 # Eff vs TrackP | MVA cuts
 def MVAEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots MVA signal efficiencies vs the tracks momenta.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -763,6 +1151,28 @@ def MVAEffVTrackP(params, eval_data, eval_proba, eval_labels, features, path="pi
 # Eff vs TrackPt | MVA cuts
 
 def MVAEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots MVA signal efficiencies vs the tracks transverse momenta.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -824,6 +1234,32 @@ def MVAEffVTrackPt(params, eval_data, eval_proba, eval_labels, features, path="p
 
 # BaselineMVA
 def BaselineMVA(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, log=False, path="pic"):
+    """
+    Plots baseline MVA outputs for the all particles.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    log : boolean
+        If True, the plots are in log scale of y axis.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -897,6 +1333,32 @@ def BaselineMVA(params, eval_data, eval_proba_baseline, eval_proba, eval_labels,
 
 # MVA Out
 def MVAOut(params, eval_data, eval_proba, eval_labels, features, log=False, path="pic"):
+    """
+    Plots MVA outputs for the all particles.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    log : boolean
+        If True, the plots are in log scale of y axis.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -968,6 +1430,32 @@ def MVAOut(params, eval_data, eval_proba, eval_labels, features, log=False, path
 # Purity V BaselineMVA
 
 def EffPurity(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, log=False, path="pic"):
+    """
+    Plots signal purity vs signal efficiency for the give particle.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    log : boolean
+        If True, the plots are in log scale of y axis.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -1013,6 +1501,30 @@ def EffPurity(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, f
 # Eff MVA V MisEff
 
 def EffMissIDEff(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots misidentification efficiency vs signal efficiency for the all particles.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -1083,6 +1595,32 @@ def EffMissIDEff(params, eval_data, eval_proba_baseline, eval_proba, eval_labels
 # Eff MVA V MisEff
 
 def EffOverallMissIDEff(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, log=False, path="pic"):
+    """
+    Plots overall misidentification efficiency vs signal efficiency for the give particle.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    log : boolean
+        If True, the plots are in log scale of y axis.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -1155,6 +1693,34 @@ def EffOverallMissIDEff(params, eval_data, eval_proba_baseline, eval_proba, eval
     return 1
 
 def MVABaselineMVA(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, log=False, signal=1, path="pic"):
+    """
+    Plots baseline MVA output vs MVA output for the given particle.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    log : boolean
+        If True, the plots are in log scale of y axis.
+    signal : boolean
+        If True, plots the figure for the signal.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -1221,6 +1787,28 @@ def MVABaselineMVA(params, eval_data, eval_proba_baseline, eval_proba, eval_labe
 
 # Pur V MVA
 def PurityVMVAOut(params, eval_data, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots signal purity vs MVA output for the given particle.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -1261,6 +1849,34 @@ def PurityVMVAOut(params, eval_data, eval_proba, eval_labels, features, path="pi
 
 # Pur V MVA
 def PurityVBaselineMVA(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots signal purity vs baseline MVA output for the given particle.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    log : boolean
+        If True, the plots are in log scale of y axis.
+    signal : boolean
+        If True, plots the figure for the signal.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     import os
 
@@ -1305,6 +1921,30 @@ def PurityVBaselineMVA(params, eval_data, eval_proba_baseline, eval_proba, eval_
 # MAIN function
 
 def all_figures(params, eval_data, eval_proba_baseline, eval_proba, eval_labels, features, path="pic"):
+    """
+    Plots all figures.
+
+    Parameters
+    ----------
+    params : dict
+        Dictionary {'TRACK': track_type, 'PARTICLE': particle_type}.
+    eval_data : pandas.DataFrame
+        Evaluation data sample which contains all features for the all particles and tracks.
+    eval_proba_baseline : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter predicted by the baseline algorithm.
+    eval_proba : ndarray, shape = (n, 2)
+        Probability that a particle belongs to the type given in 'params' parameter.
+    eval_labels : array_like
+        True labels of the particles.
+    features : array_like
+        List of the feature names.
+    path : string
+        Direcory name where the plot will be saved.
+
+    Return
+    ------
+    1
+    """
 
     Inputs(params, eval_data, eval_proba, eval_labels, features, log=False, path=path)
     Inputs(params, eval_data, eval_proba, eval_labels, features, log=True, path=path)
