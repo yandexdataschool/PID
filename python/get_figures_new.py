@@ -69,7 +69,7 @@ def get_bins(x, y, bins, x_min, x_max):
         y_bin = y[(x >= left) * (x < right)]
 
         y_means.append(y_bin.mean())
-        y_err.append(1. * y_bin.std() / (len(y_bin) + 0.001))
+        y_err.append(1. * y_bin.std() / numpy.sqrt(len(y_bin) + 0.001))
         x_means.append(0.5*(left + right))
         x_err.append(0.5*(-left + right))
 
