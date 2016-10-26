@@ -1,14 +1,30 @@
 __author__ = 'mikhail91'
+
+
 import numpy, pandas, root_numpy
+from sklearn.cross_validation import train_test_split
+import gc, os
+import sys
 
 def get_number_particles(files_http, particles_pdg, selection, log_file_name='get_number_particles.log'):
     """
     Returns number of particles of each type in each data file.
-    :param files_http: list of strings, list of http for the each data file.
-    :param particles_pdg: list of integers, list of pdg codes of the particles.
-    :param selection: string, selection criteria for the particles.
-    :param log_file_name: string, name of the log file.
-    :return: pandas.DataFrame
+
+    Parameters
+    ----------
+    files_http : array_like
+        List of https for the each data file.
+    particles_pdg : array_like
+        List of pdg codes of the particles.
+    selection : string
+        Selection criteria for the particles.
+    log_file_name : string
+        Name of the log file.
+
+    Return
+    ------
+    numbers_particles_df : pandas.DataFrame
+        Tables with number of the each particle in the each data file with its http.
     """
 
     numbers_particles = numpy.zeros((len(files_http), len(particles_pdg)))
@@ -47,21 +63,29 @@ def get_number_particles(files_http, particles_pdg, selection, log_file_name='ge
 
     return numbers_particles_df
 
-from sklearn.cross_validation import train_test_split
-import gc, os
-import sys
 
 def generate_data_sample(numbers_particles, n_tracks, selection, file_path, log_path, readed_files_txt):
     """
     Generates data sample from different decays.
-    :param numbers_particles: pandas.DataFrame, number of particles of each type in each data file.
-    :param n_tracks: int, number of tracks of each particle type.
-    :param selection: string, selection criteria for the particles.
-    :param file_path: string, name of the data sample file.
-    :param log_path: string, name of the log file.
-    :param readed_files_txt: string, name of the file which contains https of all read files.
-    Files from this file will not be read. This is needed for the warm start.
-    :return: 1
+
+    Parameters
+    ----------
+    numbers_particles : pandas.DataFrame
+        Number of particles of each type in each data file.
+    n_tracks : int
+        Number of tracks of each particle type.
+    selection : string
+        Selection criteria for the particles.
+    file_path : string
+        Name of the data sample file.
+    log_path : string
+        Name of the log file.
+    readed_files_txt : string
+        Name of the file which contains https of all read files. Files from this file will not be read. This is needed for the warm start.
+
+    Return
+    ------
+    1
     """
 
     # Estimate how many track of the each particle from the each file should be taken
