@@ -12,12 +12,21 @@ def __rolling_window(data, window_size):
     """
     Rolling window: take window with definite size through the array
 
-    :param data: array-like
-    :param window_size: size
-    :return: the sequence of windows
+    Parameters
+    ----------
+    data : array-like
+    window_size : int
+        Size.
 
-    Example: data = array(1, 2, 3, 4, 5, 6), window_size = 4
-        Then this function return array(array(1, 2, 3, 4), array(2, 3, 4, 5), array(3, 4, 5, 6))
+    Return
+    ------
+    sequence_windows : array_like
+        The sequence of windows.
+
+    Example
+    -------
+    >>> __rolling_window(array(1, 2, 3, 4, 5, 6), window_size = 4)
+    array(array(1, 2, 3, 4), array(2, 3, 4, 5), array(3, 4, 5, 6))
     """
     shape = data.shape[:-1] + (data.shape[-1] - window_size + 1, window_size)
     strides = data.strides + (data.strides[-1],)
@@ -30,9 +39,17 @@ def __cvm(subindices, total_events):
     Compared two distributions, where first is subset of second one.
     Assuming that second is ordered by ascending
 
-    :param subindices: indices of events which will be associated with the first distribution
-    :param total_events: count of events in the second distribution
-    :return: cvm metric
+    Parameters
+    ----------
+    subindices : array_like
+        Indices of events which will be associated with the first distribution.
+    total_events : int
+        Count of events in the second distribution.
+
+    Return
+    ------
+    metric_value : float
+        Cvm metric value.
     """
     # here we compute the same expression (using algebraic expressions for them).
     n_subindices = float(len(subindices))
@@ -58,11 +75,21 @@ def compute_cvm(predictions, masses, n_neighbours=200, step=50):
     Computing Cramer-von Mises (cvm) metric on background events: take average of cvms calculated for each mass bin.
     In each mass bin global prediction's cdf is compared to prediction's cdf in mass bin.
 
-    :param predictions: array-like, predictions
-    :param masses: array-like, in case of Kaggle tau23mu this is reconstructed mass
-    :param n_neighbours: count of neighbours for event to define mass bin
-    :param step: step through sorted mass-array to define next center of bin
-    :return: average cvm value
+    Parameters
+    ----------
+    predictions : array_like
+        Predictions.
+    masses : array_like
+        In case of Kaggle tau23mu this is reconstructed mass.
+    n_neighbours : int
+        Count of neighbours for event to define mass bin.
+    step : int
+        Step through sorted mass-array to define next center of bin.
+
+    Return
+    ------
+    avg_cvm_value : float
+        Average cvm value.
     """
     predictions = numpy.array(predictions)
     masses = numpy.array(masses)
@@ -85,9 +112,17 @@ def compute_cvm(predictions, masses, n_neighbours=200, step=50):
 def labels_transform(labels):
 
     """
-    Transform labels from shape = [n_samples] to shape = [n_samples, n_classes]
-    :param labels: array
-    :return: ndarray, transformed labels
+    Transform labels from shape = [n_samples] to shape = [n_samples, n_classes].
+
+    Parameters
+    ----------
+    labels : array_like
+        Labels with ineger values.
+
+    Return
+    ------
+    labels : ndarray
+        Transformed labels with {0, 1} values.
     """
 
     classes = numpy.unique(labels)
@@ -102,11 +137,19 @@ def labels_transform(labels):
 def get_roc_curves(labels, probas, curve_labels, save_path=None, show=True):
     """
     Creates roc curve for each class vs rest.
-    :param labels: array, shape = [n_samples], labels for the each class 0, 1, ..., n_classes - 1.
-    :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
-    :param curve_labels: array of strings , shape = [n_classes], labels of the curves.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
+
+    Parameters
+    ----------
+    labels : array_like
+        Labels for the each class 0, 1, ..., n_classes - 1.
+    probas : ndarray
+        Predicted probabilities with ndarray shape = [n_samples, n_classes].
+    curve_labels : array_like
+        Labels of the curves with array shape = [n_classes].
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
     """
 
     labels = labels_transform(labels)
@@ -153,12 +196,24 @@ def get_roc_auc_matrix(labels, probas, axis_labels, save_path=None, show=True):
 
     """
     Calculate class vs class roc aucs matrix.
-    :param labels: array, shape = [n_samples], labels for the each class 0, 1, ..., n_classes - 1.
-    :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
-    :param axis_labels: array of strings , shape = [n_classes], labels of the curves.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
-    :return: pandas.DataFrame roc_auc_matrix
+
+    Parameters
+    ----------
+    labels : array_like
+        Labels for the each class 0, 1, ..., n_classes - 1 with array shape = [n_samples].
+    probas : ndarray
+        Predicted probabilities with array shape = [n_samples, n_classes].
+    axis_labels : array_like
+        Labels of the curves with array shape = [n_classes].
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
+
+    Return
+    ------
+    roc_auc_matrix : pandas.DataFrame
+        A table with the roc aucs values.
     """
 
     labels = labels_transform(labels)
@@ -219,11 +274,23 @@ def get_roc_auc_ratio_matrix(matrix_one, matrix_two, save_path=None, show=True):
 
     """
     Divide matrix_one to matrix_two.
-    :param matrix_one: pandas.DataFrame with column 'Class' which contain class names.
-    :param matrix_two: pandas.DataFrame with column 'Class' which contain class names.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
-    :return: pandas.DataFrame roc_auc_ratio_matrix
+
+    Parameters
+    ----------
+    matrix_one : pandas.DataFrame
+        A matrix with roc auc values and with column 'Class' which contains class names.
+    matrix_two : pandas.DataFrame
+        A matrix with roc auc values and with column 'Class' which contains class names.
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
+
+
+    Return
+    ------
+    roc_auc_ratio_matrix : pandas.DataFrame
+        A table with ratios of the roc auc values from the two matrix.
     """
 
     # Calculate roc_auc_matrices
@@ -276,11 +343,21 @@ def get_roc_auc_ratio_matrix(matrix_one, matrix_two, save_path=None, show=True):
 def get_flatness_threshold(n_simulations, q, track):
 
     """
-    Compute percentile of CvM test for flatness
-    :param n_simulations: int number of simulations
-    :param q: percentile
-    :param track: array, variable along which the CvM test computes
-    :return: float
+    Compute percentile of CvM test for flatness.
+
+    Parameters
+    ----------
+    n_simulations : int
+        Number of simulations.
+    q : float
+        Percentile.
+    track : array_like
+        Variable values along which the CvM test computes
+
+    Return
+    ------
+    threshold : float
+        A cvm pdf value which corresponds to the percentile.
     """
 
     cvm_pdf = []
@@ -299,12 +376,22 @@ def get_flatness_table(data, labels, probas, class_names, save_path=None):
 
     """
     Compute CvM tests for TrackP and TrackPt for each classes.
-    :param data: pandas.DataFrame, data
-    :param labels: array, shape = [n_samples], labels for the each class 0, 1, ..., n_classes - 1.
-    :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
-    :param axis_labels: array of strings , shape = [n_classes], labels of the curves.
-    :param class_names: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :return: flatness pandas.DataFrame
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        Data which contains TrackP and TrackPt columns.
+    labels : array_like
+        Labels for the each class 0, 1, ..., n_classes - 1 with array shape = [n_samples].
+    probas : ndarray
+        Predicted probabilities with array shape = [n_samples, n_classes].
+    class_names : string
+        Path to a directory where the results will be saved. If None the results will not be saved.
+
+    Return
+    ------
+    flatness : pandas.DataFrame
+        A table with the flatness values.
     """
 
     labels = labels_transform(labels)
@@ -360,10 +447,20 @@ def get_flatness_ratio(flatness_one, flatness_two, save_path=None):
 
     """
     Get ratio of flatness_one and flatness_two
-    :param flatness_one: pandas.DataFrame with column 'Class' which contain class names.
-    :param flatness_two: pandas.DataFrame with column 'Class' which contain class names.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :return: pandas.DataFrame
+
+    Parameters
+    ----------
+    flatness_one : pandas.DataFrame
+        A table with the flatness values and with column 'Class' which contain class names.
+    flatness_two : pandas.DataFrame
+        A table with the flatness values and with column 'Class' which contain class names.
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+
+    Return
+    ------
+    flatness_ratios : pandas.DataFrame
+        A table with ratios of the flatness from the tables.
     """
 
     classes = flatness_one.index
@@ -393,13 +490,23 @@ def flatness_p_figure(proba, proba_baseline, track_p, track_name, particle_name,
 
     """
     Plot signal efficiency vs TrackP figure.
-    :param proba: array, shape = [n_samples], predicted probabilities.
-    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
-    :param track_p: array, shape = [n_samples], TrackP values.
-    :param track_name: string, name.
-    :param particle_name: string, name.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
+
+    Parameters
+    ----------
+    proba : array_like
+        Predicted probabilities with array shape = [n_samples].
+    probas_baseline : array_like
+        Baseline predicted probabilities with array shape = [n_samples].
+    track_p : array_like
+        TrackP values with array shape = [n_samples].
+    track_name : string
+        A track name.
+    particle_name : string
+        A particle name.
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
     """
 
     thresholds = numpy.percentile(proba, 100 - numpy.array([20, 50, 80]))
@@ -466,14 +573,24 @@ def flatness_p_figure(proba, proba_baseline, track_p, track_name, particle_name,
 def flatness_pt_figure(proba, proba_baseline, track_pt, track_name, particle_name, save_path=None, show=False):
 
     """
-    Plot signal efficiency vs TrackPt figure.
-    :param proba: array, shape = [n_samples], predicted probabilities.
-    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
-    :param track_p: array, shape = [n_samples], TrackPt values.
-    :param track_name: string, name.
-    :param particle_name: string, name.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
+    Plot signal efficiency vs TrackPt figures.
+
+    Parameters
+    ----------
+    proba : array_like
+        Predicted probabilities with array shape = [n_samples].
+    probas_baseline : array_like
+        Baseline predicted probabilities with array shape = [n_samples].
+    track_pt : array_like
+        TrackPt values with array shape = [n_samples].
+    track_name : string
+        A track name.
+    particle_name : string
+        A particle name.
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
     """
 
     thresholds = numpy.percentile(proba, 100 - numpy.array([20, 50, 80]))
@@ -539,16 +656,26 @@ def flatness_pt_figure(proba, proba_baseline, track_pt, track_name, particle_nam
 def get_all_p_pt_flatness_figures(data, probas, probas_baseline, labels, track_name, particle_names, save_path=None, show=False):
 
     """
-    Plot signal efficiency vs TrackP figure.
-    :param data: pandas.dataFrame() data.
-    :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
-    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
-    :param labels: array, shape = [n_samples], class labels 0, 1, ..., n_classes - 1.
-    :param track_p: array, shape = [n_samples], TrackP values.
-    :param track_name: string, name.
-    :param particle_names: list of strings, particle names.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
+    Plot signal efficiency vs TrackP and TrackPt figure.
+
+    Parameters
+    ----------
+    probas : ndarray
+        Predicted probabilities with array shape = [n_samples, n_classes].
+    probas_baseline : ndarray
+        Baseline predicted probabilities with array shape = [n_samples, n_classes].
+    labels : array_like
+        Class labels 0, 1, ..., n_classes - 1 with array shape = [n_samples].
+    track_p : array_like
+        TrackP values with array shape = [n_samples].
+    track_name : string
+        The track name.
+    particle_names : array)like
+        The particle names.
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
     """
 
     labels = labels_transform(labels)
@@ -591,14 +718,26 @@ from collections import OrderedDict
 def flatness_ntracks_figure(proba, proba_baseline, ntracks, track_name, particle_name, save_path=None, show=False):
 
     """
-    Plot signal efficiency vs TrackP figure.
-    :param proba: array, shape = [n_samples], predicted probabilities.
-    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
-    :param ntracks: array, shape = [n_samples], NumProtoParticles values.
-    :param track_name: string, name.
-    :param particle_name: string, name.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
+    Plot signal efficiency vs number of protoparticles.
+
+    Parameters
+    ----------
+    probas : ndarray
+        Predicted probabilities with array shape = [n_samples, n_classes].
+    probas_baseline : ndarray
+        Baseline predicted probabilities with array shape = [n_samples, n_classes].
+    labels : array_like
+        Labels of the particles with array shape = [n_sample].
+    ntracks : array_like
+        NumProtoParticles values with array shape = [n_samples].
+    track_name : string
+        The track name.
+    particle_names : array_like
+        The particle names.
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
     """
 
     thresholds = numpy.percentile(proba, 100 - numpy.array([20, 50, 80]))
@@ -666,16 +805,26 @@ def flatness_ntracks_figure(proba, proba_baseline, ntracks, track_name, particle
 def get_all_ntracks_flatness_figures(data, probas, probas_baseline, labels, track_name, particle_names, save_path=None, show=False):
 
     """
-    Plot signal efficiency vs TrackP figure.
-    :param data: pandas.dataFrame() data.
-    :param probas: bdarray, shape = [n_samples, n_classes], predicted probabilities.
-    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
-    :param labels: array, shape = [n_samples], class labels 0, 1, ..., n_classes - 1.
-    :param track_p: array, shape = [n_samples], TrackP values.
-    :param track_name: string, name.
-    :param particle_names: list of strings, particle names.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
+    Plot all signal efficiency vs number of protoparticles figures.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        Data.
+    probas : ndarray
+        Predicted probabilities with array shape = [n_samples, n_classes].
+    probas_baseline : ndarray
+        Baseline predicted probabilities with array shape = [n_samples, n_classes].
+    labels : array_like
+        Labels of the particles with array shape = [n_sample].
+    track_name : string
+        The track name.
+    particle_names : array_like
+        The particle names.
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
     """
 
     labels = labels_transform(labels)
@@ -705,10 +854,19 @@ from collections import OrderedDict
 def get_eta(track_p, track_pt):
 
     """
-    Calculate pseudo rapidity values
-    :param track_p: array, shape = [n_samples], TrackP values.
-    :param track_pt: array, shape = [n_samples], TrackPt values.
-    :return: array, shape = [n_samples], Pseudo Rapdity values.
+    Calculate pseudo rapidity values.
+
+    Parameters
+    ----------
+    track_p : array_like
+        TrackP values with array shape = [n_samples].
+    track_pt : array_like
+        TrackPt values with array shape = [n_samples].
+
+    Return
+    ------
+    eta : array_like
+        Pseudo rapidity values with array shape = [n_samples].
     """
 
     sinz = 1. * track_pt / track_p
@@ -721,14 +879,24 @@ def get_eta(track_p, track_pt):
 def flatness_eta_figure(proba, proba_baseline, eta, track_name, particle_name, save_path=None, show=False):
 
     """
-    Plot signal efficiency vs TrackP figure.
-    :param proba: array, shape = [n_samples], predicted probabilities.
-    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
-    :param eta: array, shape = [n_samples], Pseudo Rapidity values.
-    :param track_name: string, name.
-    :param particle_name: string, name.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
+    Plot signal efficiency vs pseudo rapidity figure.
+
+    Parameters
+    ----------
+    proba : array_like
+        Predicted probabilities with array shape = [n_samples].
+    probas_baseline : array_like
+        Baseline predicted probabilities with array shape = [n_samples].
+    eta : array_like
+        Pseudo rapidity values with array shape = [n_samples].
+    track_name : string
+        The track name.
+    particle_name : string
+        The particle name.
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
     """
 
     thresholds = numpy.percentile(proba, 100 - numpy.array([20, 50, 80]))
@@ -796,16 +964,28 @@ def flatness_eta_figure(proba, proba_baseline, eta, track_name, particle_name, s
 def get_all_eta_flatness_figures(data, probas, probas_baseline, labels, track_name, particle_names, save_path=None, show=False):
 
     """
-    Plot signal efficiency vs TrackP figure.
-    :param data: pandas.dataFrame() data.
-    :param probas: bdarray, shape = [n_samples, n_classes], predicted probabilities.
-    :param probas_baseline: ndarray, shape = [n_samples, n_classes], baseline predicted probabilities.
-    :param labels: array, shape = [n_samples], class labels 0, 1, ..., n_classes - 1.
-    :param track_p: array, shape = [n_samples], TrackP values.
-    :param track_name: string, name.
-    :param particle_names: list of strings, particle names.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
+    Plot signal efficiency vs pseudo rapidity figure.
+
+    Parameters
+    ----------
+    data : pandas.dataFrame
+        Data.
+    probas : ndarray
+        Predicted probabilities with array shape = [n_samples, n_classes].
+    probas_baseline : ndarray
+        Baseline predicted probabilities with array shape = [n_samples, n_classes].
+    labels : array_like
+        The class labels 0, 1, ..., n_classes - 1 with array shape = [n_samples].
+    track_p : array_like
+        TrackP values with array shape = [n_samples].
+    track_name : string
+        The track name.
+    particle_names : array_like
+        The particle names.
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
     """
 
     labels = labels_transform(labels)
@@ -834,11 +1014,19 @@ def get_all_eta_flatness_figures(data, probas, probas_baseline, labels, track_na
 def get_one_vs_one_roc_curves(labels, probas, curve_labels, save_path=None, show=True):
     """
     Creates one vs one roc curves.
-    :param labels: array, shape = [n_samples], labels for the each class 0, 1, ..., n_classes - 1.
-    :param probas: ndarray, shape = [n_samples, n_classes], predicted probabilities.
-    :param curve_labels: array of strings , shape = [n_classes], labels of the curves.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
+
+    Parameters
+    ----------
+    labels : array_like
+        Labels for the each class 0, 1, ..., n_classes - 1 with array shape = [n_samples].
+    probas : ndarray
+        Predicted probabilities with array shape = [n_samples, n_classes].
+    curve_labels : array_like
+        Labels of the curves with array shape = [n_classes].
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
     """
 
     classes = numpy.unique(labels)
@@ -881,11 +1069,22 @@ def get_roc_aoc_ratio_matrix(matrix_one, matrix_two, save_path=None, show=True):
 
     """
     Divide matrix_one to matrix_two.
-    :param matrix_one: pandas.DataFrame with column 'Class' which contain class names.
-    :param matrix_two: pandas.DataFrame with column 'Class' which contain class names.
-    :param save_path: string, path to a directory where the figure will saved. If None the figure will not be saved.
-    :param show: boolean, if true the figure will be displayed.
-    :return: pandas.DataFrame roc_aoc_ratio_matrix: (1 - matrix_one / matrix_two) * 100%
+
+    Parameters
+    ----------
+    matrix_one : pandas.DataFrame
+        A table with roc aoc values and with column 'Class' which contain class names.
+    matrix_two : pandas.DataFrame
+        A table with roc aoc values and with column 'Class' which contain class names.
+    save_path : string
+        Path to a directory where the figure will saved. If None the figure will not be saved.
+    show : boolean
+        If true the figure will be displayed.
+
+    Return
+    ------
+    matrix : pandas.DataFrame
+        Roc aoc ratios matrix: (1 - matrix_one / matrix_two) * 100%.
     """
 
     # Calculate roc_auc_matrices
